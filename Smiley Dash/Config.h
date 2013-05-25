@@ -17,6 +17,8 @@
 
 #define heroStartSpeed 1.0//1.4
 
+#define startPlayPoints 1
+
 
 #define iphoneParticleLimit 200
 #define iphoneRetinaLimit 300
@@ -28,9 +30,9 @@
 #define redLevelSpace 1
 #define startingWave 1
 #define displayChange 50
-#define redLevelScore 20000
+#define redLevelScore 5000
 #define redLevelTime 30.0
-#define yellowLevelChance 100//20 // percent
+#define yellowLevelChance 20 // percent
 #define boxTag 3
 #define boxSelected 4
 #define cardNumber 5
@@ -72,7 +74,6 @@
 //waves
 //make a cap on points earned per level
 #define maxEnemies 100
-#define waveScore 10000
 
 //powerup identifiers
 
@@ -87,20 +88,20 @@
 
 // zombies
 
-#define startEnemies 1//15 //1//10
-#define enemyAddition 0//10 //5
+#define startEnemies 10//15 //1//10
+#define enemyAddition 5//10 //5
 
 #define enemyScore 1000
 #define enemy_tag 1
 #define enemy_speed 0.1//0.1
-#define enemy_maxSpeed 0.2//1.4//0.3 //1.8
+#define enemy_maxSpeed 0.3//1.4//0.3 //1.8
 
 #define enemy_slow 0.03
 
 
 #define enemy_killTime 120
 #define enemy_acceleration 0.1
-#define enemy_spawnTime 1.0//1.75
+#define enemy_spawnTime 3//1.0//1.75
 #define accelerateEnemyInterval 1.0
 
 // power eaters

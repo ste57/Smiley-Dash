@@ -33,8 +33,16 @@
         
         // ask director for the window size
 		CGSize size = [[CCDirector sharedDirector] winSize];
-
+        prefs = [NSUserDefaults standardUserDefaults];
+        
         CCSprite *background;
+        
+        if (![prefs objectForKey:@"firstRun"]) {
+            // add this for when tutorial is being done
+            [prefs setObject:[NSDate date] forKey:@"firstRun"];
+            [prefs setInteger:startPlayPoints forKey:@"playPoints"];
+        }
+
         
         // if iphone 5, change the display to use the larger image
         
@@ -51,7 +59,29 @@
         background.position = ccp(size.width/2, size.height/2);
         
         [self addChild:background];
-       
+        
+        
+        NSInteger playPoints = [prefs integerForKey:@"playPoints"];
+        
+        CCSprite *label;
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@" playPoints: %i", playPoints] fontName:@"Baccarat" fontSize:15];
+        label.position = ccp(size.width/4 * 3, size.height - 10);
+        [self addChild:label z:4];
+        
+        NSInteger totalPoints = [prefs integerForKey:@"totalScore"];
+        
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@" total: %i", totalPoints] fontName:@"Baccarat" fontSize:15];
+        label.position = ccp(size.width/2, size.height - 10);
+        [self addChild:label z:4];
+        
+        
+        NSInteger highScore = [prefs integerForKey:@"highScore"];
+
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@" HighScore: %i", highScore] fontName:@"Baccarat" fontSize:15];
+        label.position = ccp(size.width/6, size.height - 10);
+        [self addChild:label z:4];
+        
+        
         
         CCMenuItem *play = [CCMenuItemImage itemWithNormalImage:@"MenuPlay.png" selectedImage:@"MenuPlayOn.png" target:self selector:@selector(playTapped:)];
         

@@ -11,6 +11,8 @@
 
 @interface MenuLayer : CCLayer {
     
+    NSUserDefaults *prefs;
+    
 }
 
 +(CCScene *) scene;

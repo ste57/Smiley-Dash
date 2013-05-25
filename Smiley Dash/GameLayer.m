@@ -24,6 +24,10 @@ NSMutableArray * spriteToDelete;
 CCLabelTTF *scoreLabel;
 CCLabelTTF *waveLabel;
 
+ccColor3B oldColor;
+
+int circlesDrawn;
+
 int multiplier;
 bool superCardActive;
 
@@ -82,6 +86,8 @@ int startParticle;
     
     if( (self=[super init])) {
         
+        prefs = [NSUserDefaults standardUserDefaults];
+        
         if (resume == game_restart) {
             
             [self removeAllChildrenWithCleanup:YES];
@@ -90,12 +96,9 @@ int startParticle;
             
         } else if (resume == game_resume) {
             
-            yellowLevelActive = false;
-            redLevelActive = false;
-            timePowerActive = false;
-            circleCreated = false;
-            superHeroActive = false;
-            touchMoved = NO;
+            // so extra points do not get added
+            NSInteger systemScore = [prefs integerForKey:@"totalScore"];
+            [prefs setInteger:(systemScore - score) forKey:@"totalScore"];
             
         }
         
@@ -113,11 +116,6 @@ int startParticle;
         
         time = 0;
         [self schedule:@selector(increaseTime:) interval:1.0];
-        
-        startParticle = 0;
-        superCardActive = false;
-        card = nil;
-        multiplier = startMultiplier;
         
 	}
 	return self;
@@ -179,6 +177,22 @@ int startParticle;
         
     }
     
+    oldColor = background.color;
+    
+    if((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 568)) {
+        
+        particleLimit = iphone5Limit;
+        
+    } else if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 480)){
+        
+        particleLimit = iphoneRetinaLimit;
+        
+    } else {
+        
+        particleLimit = iphoneParticleLimit;
+        
+    }
+    
     background.rotation = 90;
     // place background in the center of the screen
     background.position = ccp(winSize.width/2, winSize.height/2);
@@ -208,20 +222,18 @@ int startParticle;
     levelEnemyCount = startEnemies + (enemyAddition * (wave - 1));
     heroLife = startHeroLife;
     
+    startParticle = 0;
+    superCardActive = false;
+    yellowLevelActive = false;
+    redLevelActive = false;
+    timePowerActive = false;
+    circleCreated = false;
+    superHeroActive = false;
+    touchMoved = NO;
     
-    if((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 568)) {
-        
-        particleLimit = iphone5Limit;
-        
-    } else if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 480)){
-        
-        particleLimit = iphoneRetinaLimit;
-        
-    } else {
-        
-        particleLimit = iphoneParticleLimit;
-        
-    }
+    circlesDrawn = 0;
+    multiplier = startMultiplier;
+
 }
 
 - (void) scheduleMethods {
@@ -435,10 +447,10 @@ int startParticle;
         labelScore -= displayChange;
     }
     
-    if (multiplier == 2) {
+    if (multiplier > startMultiplier) {
         
-      [scoreLabel setString:[NSString stringWithFormat:@"%07d   x2", labelScore]];
-        scoreLabel.position = ccp(54, winSize.height - 10);
+      [scoreLabel setString:[NSString stringWithFormat:@"%07d  x%i", labelScore, multiplier]];
+        scoreLabel.position = ccp(44, winSize.height - 10);
         
     } else {
     
@@ -454,7 +466,44 @@ int startParticle;
     
 }
 
+- (void) changeColour:(int)color {
+    
+    [background stopAllActions];
+    
+    switch (color) {
+        case 1:
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:170 green:170 blue:255]];
+            break;
+        case 2:
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:255 blue:60]];
+            break;
+        case 3:
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:35 green:87 blue:29]];
+            break;
+        case 4:
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:200 green:87 blue:100]];
+            break;
+        case 5:
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:100 blue:150]];
+            break;
+        case 6:
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:180 green:100 blue:100]];
+            break;
+        case 7:
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:150 green:150 blue:150]];
+            break;
+        case 8:
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:0 blue:0]];
+            break;
+        default:
+            break;
+    }
+    
+}
+
 - (void) checkCircle {
+    
+    bool enemyFrozen = false;
     
     CGSize winSize = [[CCDirector sharedDirector] winSize];
     
@@ -480,8 +529,6 @@ int startParticle;
             if (particle.position.y < minY) {
                 minY = particle.position.y;
             }
-            
-            //[self addToDeletionPile:particle];
         }
     }
     
@@ -494,6 +541,7 @@ int startParticle;
             
             if (enemy.tag == enemy_tag) {
                 enemy.tag = frozenEnemy;
+                enemyFrozen = true;
             }
             
             
@@ -501,9 +549,10 @@ int startParticle;
         
     }
     
-  //  [self deleteFromDeletionPile];
-    
-    //[self unScheduleMethods];
+    if (enemyFrozen == true) {
+        circlesDrawn++;
+        [self changeColour:circlesDrawn];
+    }
     
 }
 
@@ -512,7 +561,6 @@ int startParticle;
     bool dobreak = false;
     
     if (touchMoved == YES) {
-        
         
         for (int i = startParticle; !dobreak && i < particles.count; i++) {
             
@@ -535,7 +583,6 @@ int startParticle;
                         
                         [circles addObject:particle];
                         
-                        
                     }
                     startParticle = j + 1;
                     
@@ -543,7 +590,6 @@ int startParticle;
                     circleCreated = true;
                     
                     dobreak = true;
-                    //touchMoved = NO;
                     
                     break;
 
@@ -675,22 +721,34 @@ int startParticle;
     
     if (circleCreated == true) {
         
+        int enemy_Score = 0;
+        
         for (Enemy *enemy in enemies) {
             
             if (enemy.tag == frozenEnemy) {
+                
+                enemy_Score += enemyScore;
                 
                 [self addToDeletionPile:enemy];
                 
             }
         }
         
+        enemy_Score *= circlesDrawn;
+        enemy_Score *= ((wave/10) + 1);
+        
+        score += (enemy_Score * multiplier);
+        
         
         [self removeAllParticles];
         
         startParticle = 0;
         circleCreated = false;
+        circlesDrawn = 0;
         
     }
+    
+    [background runAction:[CCTintTo actionWithDuration:1.0 red:oldColor.r green:oldColor.g blue:oldColor.b]];
     
     [self deleteFromDeletionPile];
     
@@ -806,20 +864,21 @@ int startParticle;
     
     for (CCSprite *box in gameObjects) {
         
+        CCSprite * card = nil;
         if (box.tag == boxSelected) {
             
             switch(arc4random() % 100) {
-               case 0 ... 59:
+               case 0 ... 39:
                     card = [CCSprite spriteWithFile:@"nothing.png"];
                     card.tag = nothingCard;
                     break;
-                case 60 ... 74:
+                case 40 ... 59:
                     card = [CCSprite spriteWithFile:@"doublePoints.png"];
                     card.tag = doublePoints;
                     superCardActive = true;
                     multiplier *= 2;
                     break;
-                case 75 ... 89:
+                case 60 ... 79:
                     card = [CCSprite spriteWithFile:@"superCard.png"];
                     card.tag = superCard;
                     
@@ -841,16 +900,17 @@ int startParticle;
                     [hero runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:superHeroSpeed angle:720*superHeroSpeed]]];
 
                     break;
-                case 90 ... 99:
+                case 80 ... 99:
                     card = [CCSprite spriteWithFile:@"playCard.png"];
                     card.tag = playCard;
+                    
+                    NSInteger playPoints = [prefs integerForKey:@"playPoints"];
+                    [prefs setInteger:(playPoints+1) forKey:@"playPoints"];
                     break;
                 default:
                     break;
             }
             
-            //card.tag = cardNumber;
-            //box.tag = cardNumber;
             card.position = box.position;
             
             [self addChild:card z:3];
@@ -887,8 +947,6 @@ int startParticle;
 - (void) yellowLevelCreate {
     
     CGSize size = [[CCDirector sharedDirector] winSize];
-    
-   // [hero runAction:[CCMoveTo actionWithDuration:(3.0) position:ccp(size.width/2, size.height/2)]];
     
     for (int i = 0; i < 4; i++) {
         
@@ -951,6 +1009,11 @@ int startParticle;
 }
 
 - (void) updateBouncers:(ccTime)dt {
+    
+    // displays time
+    [self displayScore];
+    // draws the hearts that acts as a hud to the hero
+    [self drawHearts];
     
     float x,y;
     CGSize winSize = [CCDirector sharedDirector].winSize;
@@ -1179,6 +1242,8 @@ int startParticle;
         
     }
     
+    score += (redLevelScore * multiplier);
+    
     [self unScheduleMethods];
     [self scheduleMethods];
     
@@ -1338,22 +1403,13 @@ int startParticle;
         
         [self addChild:powerup];
         [powerups addObject:powerup];
+        [powerup runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:3.0 angle:180]]];
     }
     
 }
 
 - (void) powerupAction:(CCSprite*)powerup {
-    
-    /*if (powerup.tag == mineNumber) {
-        
-        CCSprite * mine = [CCSprite spriteWithFile:@"mine.png"];
-        mine.position = powerup.position;
-        mine.tag = mineNumber;
-        
-        [self addChild:mine z:0];
-        [gameObjects addObject:mine];
-        
-    } else*/
+
     if (powerup.tag == timeNumber) {
         
         timePowerActive = true;
@@ -1366,7 +1422,7 @@ int startParticle;
         }
         
         
-    } else if (powerup.tag == starNumber && superCardActive == false && card.tag != superCard) {
+    } else if (powerup.tag == starNumber && superCardActive == false) {
         
         [self activateSuperhero];
         
@@ -1376,11 +1432,11 @@ int startParticle;
     
     } else if (powerup.tag == coinNumber) {
         
-        score += coinScore;
+        score += (coinScore * multiplier);
         
     }
     
-    score += powerupScore;
+    score += (powerupScore * multiplier);
     
 }
 
@@ -1398,11 +1454,11 @@ int startParticle;
 
     heroSpeed = superHeroSpeed;
     
-    id rotate = [CCRotateBy actionWithDuration:superHeroTime - 2 angle:720 * superHeroTime];
-    id slowRotate = [CCRotateBy actionWithDuration:1 angle:600];
-    id slowRotate2 = [CCRotateBy actionWithDuration:1 angle:360];
+    CCRotateBy *rotate = [CCRotateBy actionWithDuration:superHeroTime - 2 angle:720 * superHeroTime];
+    CCRotateBy *slowRotate = [CCRotateBy actionWithDuration:1 angle:600];
+    CCRotateBy *slowRotating = [CCRotateBy actionWithDuration:1 angle:360];
     
-   [hero runAction:[CCSequence actions: rotate, slowRotate, slowRotate2, nil]];
+   [hero runAction:[CCSequence actions: rotate, slowRotate, slowRotating, nil]];
     
     superHeroStartTime = time;
     superHeroActive = true;
@@ -1431,7 +1487,7 @@ int startParticle;
 - (void) resetEnemySpeed {
     timePowerActive = false;
     
-} //fix this
+}
 
 - (void) resetHeroSpeed {
     
@@ -1480,7 +1536,7 @@ int startParticle;
 }
 
 - (CCSprite*) getParticle {
-    //inefficient
+
     CCSprite *particle;
     
     for (int i = 0; i < particles.count; i++) {
@@ -1603,14 +1659,14 @@ int startParticle;
                         startParticle = 0;
                         circleCreated = false;
                         touchMoved = NO;
+                        
+                        circlesDrawn = 0;
+                        [background runAction:[CCTintTo actionWithDuration:1.0 red:oldColor.r green:oldColor.g blue:oldColor.b]];
                         break;
                     }
                 }
             }
         }
-        
-        
-        
         
         
         if (circleCreated == false && enemy.tag == frozenEnemy) {
@@ -1630,7 +1686,7 @@ int startParticle;
                 
                 // add enemy to deletion
                 [self addToDeletionPile:enemy];
-                score += enemyScore;
+                score += (enemyScore * multiplier);
                 
             }
             
@@ -1649,8 +1705,6 @@ int startParticle;
                     
                     if (powerup.tag == starNumber) {
                         
-                        // error here, your adding to an iterating list
-                        //[self addSuperEnemy:powerup.position.x yVal:powerup.position.y];
                         [superEnemies addObject:enemy];
                         
                         [self addToDeletionPile:enemy];
@@ -1686,12 +1740,12 @@ int startParticle;
                 // if superhero remove the enemy
                 if (hero.tag == superHeroTag) {
                     
-                    score += enemyScore;
+                    score += (enemyScore * multiplier);
                     [self addToDeletionPile:enemy];
                     
                 } else if (heroLife > 1) {
                     
-                    score += enemyScore;
+                    score += (enemyScore * multiplier);
                     heroLife--;
                     [self addToDeletionPile:enemy];
                     
@@ -1706,61 +1760,21 @@ int startParticle;
                     currentEnemyCount -= enemies.count;
                     
                     [enemy runAction:[CCMoveTo actionWithDuration:1.0 position:hero.position]];
+
+                    NSInteger highScore = [prefs integerForKey:@"highScore"];
+                    
+                    if (score > highScore) {
+                        [prefs setInteger:score forKey:@"highScore"];
+                    }
+                    
+                    [prefs setInteger:(highScore + score) forKey:@"totalScore"];
                     
                     [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:3.0 scene: [GameOver scene]]];
                 }
             }
             
         }
-        /*****************************************************************/
         
-        
-        /**** next handles object collision with enemy ****/
-        
-        // if zombie clashes with an object such as a mine
-        
-       /* for (CCSprite *sprite in gameObjects) {
-            
-            if (CGRectIntersectsRect(enemy.boundingBox, sprite.boundingBox) && enemy.tag == enemy_tag) {
-                
-                // if enemy collides with a mine
-                if (sprite.tag == mineNumber) {
-                    
-                    CCSprite *explode = [CCSprite spriteWithFile:@"explode.png"];
-                    explode.position = sprite.position;
-                    
-                    explode.tag = explodeNumber;
-                    // set the explosion to be invisible
-                    explode.opacity = 0;
-                    
-                    [effects addObject:explode];
-                    
-                    // this makes it seem as if the bomb is actually exploding
-                    CCFadeIn *fadeIn = [CCFadeTo actionWithDuration:0.1 opacity:255];
-                    CCFadeOut *fade = [CCFadeOut actionWithDuration:1];
-                    CCCallFuncN *remove = [CCCallFuncN actionWithTarget:self selector:@selector(removeSprite:)];
-                    CCSequence *seq = [CCSequence actions: fadeIn, fade, remove, nil];
-                    [explode runAction:seq];
-                    
-                    [self addChild:explode z:1];
-                    // remove mine
-                    [self addToDeletionPile:sprite];
-                }
-            }
-        }
-        
-        for (CCSprite *sprite in effects) {
-            // if sprite collides with explosion remove sprite (except hero)
-            
-            if (CGRectIntersectsRect(enemy.boundingBox, sprite.boundingBox) && sprite.tag != bouncer_tag) {
-                
-                [self addToDeletionPile:enemy];
-                
-            }
-            
-        }
-    }
-        */
     }
     
     for (CCSprite* enemy in superEnemies) {
@@ -1828,8 +1842,6 @@ int startParticle;
         
         levelEnemyCount = startEnemies + (enemyAddition * (wave - 1));
         
-        score += waveScore;
-        
         [self displayWave];
         
         if (chosenRedLevel == 0) {
@@ -1865,8 +1877,6 @@ int startParticle;
             
         } else if (chosenRedLevel < wave) {
             
-            score += redLevelScore;
-            
             redLevelActive = false;
             
             [self firstBackground];
@@ -1879,7 +1889,6 @@ int startParticle;
             //YELLOW LEVEL!!!
             /**********************************************************************************************/
             
-            multiplier = startMultiplier;
             superCardActive = false;
             
             previousYellowLevel = wave;
@@ -1937,6 +1946,6 @@ int startParticle;
     
     [self deleteFromDeletionPile];
     
-} //still to do part1 done
+}
 
 @end

@@ -9,6 +9,9 @@
 #import "Gameover.h"
 #import "GameLayer.h"
 #import "Config.h"
+#import "MenuLayer.h"
+
+CCLabelTTF *pointsLabel;
 
 @implementation GameOver
 
@@ -33,6 +36,12 @@
         // ask director for the window size
 		CGSize size = [[CCDirector sharedDirector] winSize];
         
+        prefs = [NSUserDefaults standardUserDefaults];
+        
+        NSInteger playPoints = [prefs integerForKey:@"playPoints"];
+        
+        pointsLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%i", playPoints] fontName:@"Collegiate-Normal" fontSize:23];
+        
         CCLabelTTF *rewindlabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Restart"] fontName:@"ElGar" fontSize:23];
         
         CCLabelTTF *playlabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Resume" ] fontName:@"ElGar" fontSize:23];
@@ -47,13 +56,29 @@
         playlabel.color = ccc3(255, 255, 255);
         stoplabel.color = ccc3(255, 255, 255);
         
+        pointsLabel.position = ccp(size.width/2,(size.height * 1/5));
+        pointsLabel.color = ccc3(255, 255, 255);
+        
+        [self addChild:pointsLabel];
         [self addChild:rewindlabel];
         [self addChild:playlabel];
         [self addChild:stoplabel];
         
         
         CCMenuItem *rewind = [CCMenuItemImage itemWithNormalImage:@"rewindOn.png" selectedImage:@"rewindOff.png" target:self selector:@selector(rewindTapped:)];
-        CCMenuItem *play = [CCMenuItemImage itemWithNormalImage:@"playOn.png" selectedImage:@"playOff.png" target:self selector:@selector(playTapped:)];
+        
+        CCMenuItem *play;
+        
+        if (playPoints > 0) {
+            
+            play = [CCMenuItemImage itemWithNormalImage:@"playOn.png" selectedImage:@"playOff.png" target:self selector:@selector(playTapped:)];
+        
+        } else {
+            
+            play = [CCMenuItemImage itemWithNormalImage:@"playOff.png" selectedImage:@"playOn.png" target:self selector:@selector(playTapped:)];
+       
+        }
+        
         CCMenuItem *stop = [CCMenuItemImage itemWithNormalImage:@"stopOn.png" selectedImage:@"stopOff.png" target:self selector:@selector(stopTapped:)];
         
 
@@ -75,11 +100,22 @@
 }
 
 - (void) stopTapped:(id)sender {
-    printf("yet to be done!");
+    
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[MenuLayer scene]]];
+    
 }
 
 - (void) playTapped:(id)sender {
-    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[GameLayer scene:game_resume]]];
+    
+    NSInteger playPoints = [prefs integerForKey:@"playPoints"];
+    
+    if (playPoints > 0) {
+        
+        [prefs setInteger:(playPoints - 1) forKey:@"playPoints"];
+        [pointsLabel setString:[NSString stringWithFormat:@"%i", playPoints - 1]];
+        [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[GameLayer scene:game_resume]]];
+
+    }
 }
 
 - (void) rewindTapped:(id)sender {

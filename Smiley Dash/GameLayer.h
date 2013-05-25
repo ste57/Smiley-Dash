@@ -11,11 +11,12 @@
 
 @interface GameLayer : CCLayer {
     
-    CCSprite *hero, *background, *card;
+    CCSprite *hero, *background;
     CGPoint touchLocation;
     BOOL touchMoved;
     int heroLife, levelEnemyCount, particleLimit;;
     float time;
+    NSUserDefaults *prefs;
 }
 
 +(id)nodeScenario:(int)resume;

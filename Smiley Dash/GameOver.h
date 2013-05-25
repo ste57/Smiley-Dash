@@ -11,6 +11,8 @@
 
 @interface GameOver : CCLayer {
     
+    NSUserDefaults *prefs;
+    
 }
 
 +(CCScene *) scene;
