@@ -72,20 +72,6 @@ int startParticle;
     superHeroActive = false;
     timePowerStartTime = 0;
     
-    if((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 568)) {
-        
-        particleLimit = iphone5Limit;
-        
-    } else if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 480)){
-        
-        particleLimit = iphoneRetinaLimit;
-        
-    } else {
-        
-        particleLimit = iphoneParticleLimit;
-        
-    }
-    
     
 } // finish this at the end
 
@@ -215,6 +201,21 @@ int startParticle;
     
     levelEnemyCount = startEnemies + (enemyAddition * (wave - 1));
     heroLife = startHeroLife;
+    
+    
+    if((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 568)) {
+        
+        particleLimit = iphone5Limit;
+        
+    } else if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 480)){
+        
+        particleLimit = iphoneRetinaLimit;
+        
+    } else {
+        
+        particleLimit = iphoneParticleLimit;
+        
+    }
 }
 
 - (void) scheduleMethods {
