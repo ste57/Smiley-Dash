@@ -117,7 +117,7 @@ int startParticle;
         startParticle = 0;
         superCardActive = false;
         card = nil;
-        multiplier = 0;
+        multiplier = startMultiplier;
         
 	}
 	return self;
@@ -817,7 +817,7 @@ int startParticle;
                     card = [CCSprite spriteWithFile:@"doublePoints.png"];
                     card.tag = doublePoints;
                     superCardActive = true;
-                    multiplier = 2;
+                    multiplier *= 2;
                     break;
                 case 75 ... 89:
                     card = [CCSprite spriteWithFile:@"superCard.png"];
@@ -1785,7 +1785,7 @@ int startParticle;
     if ((wave - previousYellowLevel) == 2 && previousYellowLevel != 0) {
         
         superCardActive = false;
-        multiplier = 0;
+        multiplier = startMultiplier;
     }
 
     
@@ -1879,7 +1879,7 @@ int startParticle;
             //YELLOW LEVEL!!!
             /**********************************************************************************************/
             
-            multiplier = 0;
+            multiplier = startMultiplier;
             superCardActive = false;
             
             previousYellowLevel = wave;

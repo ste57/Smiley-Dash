@@ -57,6 +57,8 @@
 #define doublePoints 3
 #define nothingCard 4
 
+#define startMultiplier 1
+
 
 //Powerups
 
