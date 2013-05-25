@@ -30,7 +30,7 @@
 #define displayChange 50
 #define redLevelScore 20000
 #define redLevelTime 30.0
-#define yellowLevelChance 20 // percent
+#define yellowLevelChance 100//20 // percent
 #define boxTag 3
 #define boxSelected 4
 #define cardNumber 5
@@ -51,6 +51,11 @@
 #define normalParticle 1
 
 #define frozenEnemy 7
+
+#define playCard 1
+#define superCard 2
+#define doublePoints 3
+#define nothingCard 4
 
 
 //Powerups
@@ -81,7 +86,7 @@
 // zombies
 
 #define startEnemies 1//15 //1//10
-#define enemyAddition 10 //5
+#define enemyAddition 0//10 //5
 
 #define enemyScore 1000
 #define enemy_tag 1

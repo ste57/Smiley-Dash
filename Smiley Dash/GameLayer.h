@@ -11,7 +11,7 @@
 
 @interface GameLayer : CCLayer {
     
-    CCSprite *hero, *background;
+    CCSprite *hero, *background, *card;
     CGPoint touchLocation;
     BOOL touchMoved;
     int heroLife, levelEnemyCount, particleLimit;;

@@ -24,6 +24,9 @@ NSMutableArray * spriteToDelete;
 CCLabelTTF *scoreLabel;
 CCLabelTTF *waveLabel;
 
+int multiplier;
+bool superCardActive;
+
 bool yellowLevelActive;
 bool redLevelActive;
 bool timePowerActive;
@@ -112,6 +115,9 @@ int startParticle;
         [self schedule:@selector(increaseTime:) interval:1.0];
         
         startParticle = 0;
+        superCardActive = false;
+        card = nil;
+        multiplier = 0;
         
 	}
 	return self;
@@ -418,14 +424,26 @@ int startParticle;
 
 - (void) displayScore {
     
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
+    
     if (score > labelScore) {
+        
         labelScore += displayChange;
-        [scoreLabel setString:[NSString stringWithFormat:@"%07d", labelScore]];
         
     } else if (score < labelScore) {
         
         labelScore -= displayChange;
+    }
+    
+    if (multiplier == 2) {
+        
+      [scoreLabel setString:[NSString stringWithFormat:@"%07d   x2", labelScore]];
+        scoreLabel.position = ccp(54, winSize.height - 10);
+        
+    } else {
+    
         [scoreLabel setString:[NSString stringWithFormat:@"%07d", labelScore]];
+        scoreLabel.position = ccp(34, winSize.height - 10);
     }
     
 }
@@ -790,10 +808,49 @@ int startParticle;
         
         if (box.tag == boxSelected) {
             
-            CCSprite *card = [CCSprite spriteWithFile:@"bouncer.png"];
+            switch(arc4random() % 100) {
+               case 0 ... 59:
+                    card = [CCSprite spriteWithFile:@"nothing.png"];
+                    card.tag = nothingCard;
+                    break;
+                case 60 ... 74:
+                    card = [CCSprite spriteWithFile:@"doublePoints.png"];
+                    card.tag = doublePoints;
+                    superCardActive = true;
+                    multiplier = 2;
+                    break;
+                case 75 ... 89:
+                    card = [CCSprite spriteWithFile:@"superCard.png"];
+                    card.tag = superCard;
+                    
+                    CGPoint heroPos = hero.position;
+                    
+                    [self removeChild:hero cleanup:YES];
+                    
+                    hero = [CCSprite spriteWithFile:@"superhero.png"];
+                    hero.position = heroPos;
+                    hero.tag = superHeroTag;
+                    
+                    [self addChild:hero z:2];
+                    
+                    heroSpeed = superHeroSpeed;
+                    
+                    superCardActive = true;
+                    superHeroActive = true;
+                    superHeroStartTime = time;
+                    [hero runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:superHeroSpeed angle:720*superHeroSpeed]]];
+
+                    break;
+                case 90 ... 99:
+                    card = [CCSprite spriteWithFile:@"playCard.png"];
+                    card.tag = playCard;
+                    break;
+                default:
+                    break;
+            }
             
-            card.tag = cardNumber;
-            box.tag = cardNumber;
+            //card.tag = cardNumber;
+            //box.tag = cardNumber;
             card.position = box.position;
             
             [self addChild:card z:3];
@@ -1309,7 +1366,7 @@ int startParticle;
         }
         
         
-    } else if (powerup.tag == starNumber) {
+    } else if (powerup.tag == starNumber && superCardActive == false && card.tag != superCard) {
         
         [self activateSuperhero];
         
@@ -1344,6 +1401,7 @@ int startParticle;
     id rotate = [CCRotateBy actionWithDuration:superHeroTime - 2 angle:720 * superHeroTime];
     id slowRotate = [CCRotateBy actionWithDuration:1 angle:600];
     id slowRotate2 = [CCRotateBy actionWithDuration:1 angle:360];
+    
    [hero runAction:[CCSequence actions: rotate, slowRotate, slowRotate2, nil]];
     
     superHeroStartTime = time;
@@ -1354,6 +1412,8 @@ int startParticle;
 - (void) deactivateSuperhero {
 
     CGPoint heroPos = hero.position;
+    
+    [hero stopAllActions];
     
     [self removeChild:hero cleanup:YES];
     
@@ -1721,14 +1781,22 @@ int startParticle;
         
     }
     
-    if (superHeroActive == true && (time - superHeroStartTime) > superHeroTime) {
+    
+    if ((wave - previousYellowLevel) == 2 && previousYellowLevel != 0) {
+        
+        superCardActive = false;
+        multiplier = 0;
+    }
+
+    
+    if (superHeroActive == true && (time - superHeroStartTime) > superHeroTime && superCardActive == false) {
         
         [self deactivateSuperhero];
         
     }
-    
+
     [self checkDrawingCircle];
-    
+
     // no powerups or normal enemies during red level
     
     if (redLevelActive == false) {
@@ -1810,6 +1878,9 @@ int startParticle;
             
             //YELLOW LEVEL!!!
             /**********************************************************************************************/
+            
+            multiplier = 0;
+            superCardActive = false;
             
             previousYellowLevel = wave;
             
