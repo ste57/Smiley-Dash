@@ -472,25 +472,25 @@ int startParticle;
     
     switch (color) {
         case 1:
-            [background runAction:[CCTintTo actionWithDuration:0.7 red:170 green:170 blue:255]];
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:210 blue:210]];
             break;
         case 2:
-            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:255 blue:60]];
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:180 blue:180]];
             break;
         case 3:
-            [background runAction:[CCTintTo actionWithDuration:0.7 red:35 green:87 blue:29]];
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:150 blue:150]];
             break;
         case 4:
-            [background runAction:[CCTintTo actionWithDuration:0.7 red:200 green:87 blue:100]];
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:120 blue:120]];
             break;
         case 5:
-            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:100 blue:150]];
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:90 blue:90]];
             break;
         case 6:
-            [background runAction:[CCTintTo actionWithDuration:0.7 red:180 green:100 blue:100]];
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:60 blue:60]];
             break;
         case 7:
-            [background runAction:[CCTintTo actionWithDuration:0.7 red:150 green:150 blue:150]];
+            [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:30 blue:30]];
             break;
         case 8:
             [background runAction:[CCTintTo actionWithDuration:0.7 red:255 green:0 blue:0]];
@@ -542,6 +542,22 @@ int startParticle;
             if (enemy.tag == enemy_tag) {
                 enemy.tag = frozenEnemy;
                 enemyFrozen = true;
+                
+                CCSprite * select;
+                
+                select = [CCSprite spriteWithFile:@"select.png"];
+                
+                [select runAction:[CCScaleTo actionWithDuration: 0.8 scaleX:1.8 scaleY:1.8]];
+                CCFadeOut *fade = [CCFadeOut actionWithDuration:0.8];
+                [select runAction:[CCSequence actions:fade, [CCCallBlockN actionWithBlock:^(CCNode *node) {
+                    [self addToDeletionPile:select];
+                }], nil]];
+            
+                select.position = enemy.position;
+            
+                [gameObjects addObject:select];
+                [self addChild:select z:2];
+                
             }
             
             
@@ -836,10 +852,10 @@ int startParticle;
                     
                     box.tag = boxSelected;
                     
-                    [box runAction:[CCScaleTo actionWithDuration:0.3 scale:1.2]];
                     [box runAction:[CCFadeOut actionWithDuration:1.0]];
                     
-                    CCDelayTime *delay = [CCDelayTime actionWithDuration:1.3];
+                    
+                    CCDelayTime *delay = [CCDelayTime actionWithDuration:2.0];
                     CCCallFuncN *remove = [CCCallFuncN actionWithTarget:self selector:@selector(fadeAllOut)];
                     CCSequence *seq = [CCSequence actions:delay, remove, nil];
                     [box runAction:seq];
@@ -848,7 +864,7 @@ int startParticle;
                     
                     yellowLevelActive = false;
                     
-                    CCDelayTime *timeDelay = [CCDelayTime actionWithDuration:3.0];
+                    CCDelayTime *timeDelay = [CCDelayTime actionWithDuration:2.0];
                     CCCallFuncN *stop = [CCCallFuncN actionWithTarget:self selector:@selector(stopYellowLevel)];
                     [self runAction:[CCSequence actions:timeDelay, stop, nil]];
                     break;
@@ -916,7 +932,7 @@ int startParticle;
             [self addChild:card z:3];
             [gameObjects addObject:card];
             
-            [card runAction:[CCSequence actions: [CCFadeOut actionWithDuration:4.0], nil]];
+            [card runAction:[CCSequence actions: [CCDelayTime actionWithDuration:1.0], [CCFadeOut actionWithDuration:3.0], nil]];
             
             break;
         }
@@ -1503,17 +1519,18 @@ int startParticle;
         
         if (enemy.time >= enemy_killTime) {
             
-            currentEnemyCount = 0;
+            //currentEnemyCount = 0;
+            [self addToDeletionPile:enemy];
             
         }
         
         if (enemy.tag == enemy_tag && timePowerActive == false) {
             
-            if (enemy.speed <= enemy.maxSpeed) {
+            if (enemy.speed < enemy.maxSpeed) {
             
                 enemy.speed += enemy_acceleration;
             
-            } else {
+            } else if (enemy.speed > enemy.maxSpeed) {
             
                 enemy.speed -= enemy_acceleration;
             
@@ -1589,7 +1606,7 @@ int startParticle;
     if (particles.count > particleLimit) {
         
         // remove latest particle
-        particle = [particles objectAtIndex:0];
+        particle = [self getParticle];
         
         [particles removeObject: particle];
         [self removeChild:particle cleanup:YES];

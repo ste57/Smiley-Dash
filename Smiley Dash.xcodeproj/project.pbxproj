@@ -231,6 +231,8 @@
 		DC5AF04A173EEDE500CD9668 /* Cartoon Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DC5AF048173EEDE500CD9668 /* Cartoon Bold.ttf */; };
 		DC6815251745290100550540 /* touch-hd.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6815231745290100550540 /* touch-hd.png */; };
 		DC6815261745290100550540 /* touch.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6815241745290100550540 /* touch.png */; };
+		DC790A2117535CA0005ACC91 /* select-hd.png in Resources */ = {isa = PBXBuildFile; fileRef = DC790A1F17535CA0005ACC91 /* select-hd.png */; };
+		DC790A2217535CA0005ACC91 /* select.png in Resources */ = {isa = PBXBuildFile; fileRef = DC790A2017535CA0005ACC91 /* select.png */; };
 		DC805AA41741BEDF0089E6E8 /* bouncer.png in Resources */ = {isa = PBXBuildFile; fileRef = DC805AA21741BEDF0089E6E8 /* bouncer.png */; };
 		DC805AA51741BEDF0089E6E8 /* bouncer-hd.png in Resources */ = {isa = PBXBuildFile; fileRef = DC805AA31741BEDF0089E6E8 /* bouncer-hd.png */; };
 		DC805AA817423E0E0089E6E8 /* GameOver.m in Sources */ = {isa = PBXBuildFile; fileRef = DC805AA717423E0E0089E6E8 /* GameOver.m */; };
@@ -701,6 +703,8 @@
 		DC5AF048173EEDE500CD9668 /* Cartoon Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cartoon Bold.ttf"; sourceTree = "<group>"; };
 		DC6815231745290100550540 /* touch-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "touch-hd.png"; sourceTree = "<group>"; };
 		DC6815241745290100550540 /* touch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = touch.png; sourceTree = "<group>"; };
+		DC790A1F17535CA0005ACC91 /* select-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "select-hd.png"; sourceTree = "<group>"; };
+		DC790A2017535CA0005ACC91 /* select.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = select.png; sourceTree = "<group>"; };
 		DC805AA21741BEDF0089E6E8 /* bouncer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bouncer.png; sourceTree = "<group>"; };
 		DC805AA31741BEDF0089E6E8 /* bouncer-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bouncer-hd.png"; sourceTree = "<group>"; };
 		DC805AA617423E0E0089E6E8 /* GameOver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameOver.h; sourceTree = "<group>"; };
@@ -789,6 +793,8 @@
 		DC4ECF371738F4300059312F /* Objects */ = {
 			isa = PBXGroup;
 			children = (
+				DC790A1F17535CA0005ACC91 /* select-hd.png */,
+				DC790A2017535CA0005ACC91 /* select.png */,
 				DC2AF180175045E400258090 /* superCard-hd.png */,
 				DC2AF181175045E400258090 /* superCard.png */,
 				DC2AF178175044A900258090 /* nothing-hd.png */,
@@ -1684,6 +1690,8 @@
 				DC2AF17F175044A900258090 /* playCard.png in Resources */,
 				DC2AF182175045E400258090 /* superCard-hd.png in Resources */,
 				DC2AF183175045E400258090 /* superCard.png in Resources */,
+				DC790A2117535CA0005ACC91 /* select-hd.png in Resources */,
+				DC790A2217535CA0005ACC91 /* select.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

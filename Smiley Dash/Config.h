@@ -32,7 +32,7 @@
 #define displayChange 50
 #define redLevelScore 5000
 #define redLevelTime 30.0
-#define yellowLevelChance 20 // percent
+#define yellowLevelChance 100//20 // percent
 #define boxTag 3
 #define boxSelected 4
 #define cardNumber 5
@@ -88,8 +88,8 @@
 
 // zombies
 
-#define startEnemies 10//15 //1//10
-#define enemyAddition 5//10 //5
+#define startEnemies 1//10//15 //1//10
+#define enemyAddition 0//5//10 //5
 
 #define enemyScore 1000
 #define enemy_tag 1
