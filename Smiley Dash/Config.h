@@ -19,6 +19,7 @@
 
 #define startPlayPoints 1
 
+#define actionEffect 2
 
 #define iphoneParticleLimit 200
 #define iphoneRetinaLimit 300
@@ -31,8 +32,8 @@
 #define startingWave 1
 #define displayChange 50
 #define redLevelScore 5000
-#define redLevelTime 30.0
-#define yellowLevelChance 100//20 // percent
+#define redLevelTime 5//30.0
+#define yellowLevelChance 20 // percent
 #define boxTag 3
 #define boxSelected 4
 #define cardNumber 5
@@ -88,7 +89,7 @@
 
 // zombies
 
-#define startEnemies 1//10//15 //1//10
+#define startEnemies 200//20 //1//10
 #define enemyAddition 0//5//10 //5
 
 #define enemyScore 1000
@@ -101,7 +102,7 @@
 
 #define enemy_killTime 120
 #define enemy_acceleration 0.1
-#define enemy_spawnTime 3//1.0//1.75
+#define enemy_spawnTime 0.1//3//1.0//1.75
 #define accelerateEnemyInterval 1.0
 
 // power eaters
