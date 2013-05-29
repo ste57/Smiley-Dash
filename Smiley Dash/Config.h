@@ -50,6 +50,10 @@
 #define redLevel2Speed 2
 #define redLevel3Speed 3
 
+#define scoreEnemy 9
+
+#define retreatTime 5.0
+
 #define circleParticle 2
 #define normalParticle 1
 
@@ -89,8 +93,8 @@
 
 // zombies
 
-#define startEnemies 200//20 //1//10
-#define enemyAddition 0//5//10 //5
+#define startEnemies 5//1//10
+#define enemyAddition 5//5//10 //5
 
 #define enemyScore 1000
 #define enemy_tag 1
@@ -102,7 +106,7 @@
 
 #define enemy_killTime 120
 #define enemy_acceleration 0.1
-#define enemy_spawnTime 0.1//3//1.0//1.75
+#define enemy_spawnTime 3//1.0//1.75
 #define accelerateEnemyInterval 1.0
 
 // power eaters

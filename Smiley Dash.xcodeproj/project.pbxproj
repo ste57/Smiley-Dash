@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		DC0043E81739A55F00C52F33 /* particle-hd.png in Resources */ = {isa = PBXBuildFile; fileRef = DC0043E61739A55F00C52F33 /* particle-hd.png */; };
 		DC0043E91739A55F00C52F33 /* particle.png in Resources */ = {isa = PBXBuildFile; fileRef = DC0043E71739A55F00C52F33 /* particle.png */; };
+		DC1FEDD81755CFD1004543E4 /* enemyEffect-hd.png in Resources */ = {isa = PBXBuildFile; fileRef = DC1FEDD61755CFD1004543E4 /* enemyEffect-hd.png */; };
+		DC1FEDD91755CFD1004543E4 /* enemyEffect.png in Resources */ = {isa = PBXBuildFile; fileRef = DC1FEDD71755CFD1004543E4 /* enemyEffect.png */; };
 		DC2ADDE917412BBF0086FC34 /* Enemy.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2ADDE817412BBF0086FC34 /* Enemy.m */; };
 		DC2AF1761750449600258090 /* doublePoints-hd.png in Resources */ = {isa = PBXBuildFile; fileRef = DC2AF1741750449600258090 /* doublePoints-hd.png */; };
 		DC2AF1771750449600258090 /* doublePoints.png in Resources */ = {isa = PBXBuildFile; fileRef = DC2AF1751750449600258090 /* doublePoints.png */; };
@@ -289,6 +291,8 @@
 /* Begin PBXFileReference section */
 		DC0043E61739A55F00C52F33 /* particle-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "particle-hd.png"; sourceTree = "<group>"; };
 		DC0043E71739A55F00C52F33 /* particle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = particle.png; sourceTree = "<group>"; };
+		DC1FEDD61755CFD1004543E4 /* enemyEffect-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "enemyEffect-hd.png"; sourceTree = "<group>"; };
+		DC1FEDD71755CFD1004543E4 /* enemyEffect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enemyEffect.png; sourceTree = "<group>"; };
 		DC2ADDE717412BBF0086FC34 /* Enemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Enemy.h; sourceTree = "<group>"; };
 		DC2ADDE817412BBF0086FC34 /* Enemy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Enemy.m; sourceTree = "<group>"; };
 		DC2AF1741750449600258090 /* doublePoints-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "doublePoints-hd.png"; sourceTree = "<group>"; };
@@ -801,6 +805,8 @@
 		DC4ECF371738F4300059312F /* Objects */ = {
 			isa = PBXGroup;
 			children = (
+				DC1FEDD61755CFD1004543E4 /* enemyEffect-hd.png */,
+				DC1FEDD71755CFD1004543E4 /* enemyEffect.png */,
 				DC77B3091754A4D400F225DD /* superEffect-hd.png */,
 				DC77B30A1754A4D400F225DD /* superEffect.png */,
 				DC380A19175488AE007DF20E /* timeEffect-hd.png */,
@@ -1708,6 +1714,8 @@
 				DC380A1C175488AE007DF20E /* timeEffect.png in Resources */,
 				DC77B30B1754A4D400F225DD /* superEffect-hd.png in Resources */,
 				DC77B30C1754A4D400F225DD /* superEffect.png in Resources */,
+				DC1FEDD81755CFD1004543E4 /* enemyEffect-hd.png in Resources */,
+				DC1FEDD91755CFD1004543E4 /* enemyEffect.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
