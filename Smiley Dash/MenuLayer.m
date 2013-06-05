@@ -9,6 +9,7 @@
 #import "MenuLayer.h"
 #import "GameLayer.h"
 #import "Config.h"
+#import "TutorialLayer.h"
 
 
 @implementation MenuLayer
@@ -109,7 +110,8 @@
 }
 
 - (void) playTapped:(id)sender {
-    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[GameLayer scene:game_restart]]];
+    //[[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[GameLayer scene:game_restart]]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[TutorialLayer scene]]];
 }
 
 - (void) guideTapped:(id)sender {

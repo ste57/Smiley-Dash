@@ -13,8 +13,9 @@
     
     CCSprite *hero, *background;
     CGPoint touchLocation;
+    CGPoint previousTouch;
     BOOL touchMoved;
-    int heroLife, levelEnemyCount, particleLimit;;
+    int heroLife, levelEnemyCount, particleLimit;
     float time;
     NSUserDefaults *prefs;
 }

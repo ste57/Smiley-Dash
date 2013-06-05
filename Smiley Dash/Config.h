@@ -15,7 +15,7 @@
 
 
 
-#define heroStartSpeed 1.0//1.4
+#define heroStartSpeed 2.0//1.4
 
 #define startPlayPoints 1
 
@@ -32,8 +32,8 @@
 #define startingWave 1
 #define displayChange 50
 #define redLevelScore 5000
-#define redLevelTime 5//30.0
-#define yellowLevelChance 20 // percent
+#define redLevelTime 30.0
+#define yellowLevelChance 100//20 // percent
 #define boxTag 3
 #define boxSelected 4
 #define cardNumber 5
@@ -66,10 +66,12 @@
 
 #define startMultiplier 1
 
+#define heroMaxLife 3
+
 
 //Powerups
 
-#define powerUpSpawn 4.0
+#define powerUpSpawn 10.0
 #define powerUpCount 2
 #define powerupScore 50
 
@@ -93,25 +95,25 @@
 
 // zombies
 
-#define startEnemies 5//1//10
-#define enemyAddition 5//5//10 //5
+#define startEnemies 1//10
+#define enemyAddition 0//5//10 //5
 
 #define enemyScore 1000
 #define enemy_tag 1
 #define enemy_speed 0.1//0.1
-#define enemy_maxSpeed 0.3//1.4//0.3 //1.8
+#define enemy_maxSpeed 2.0//1.4//0.3 //1.8
 
 #define enemy_slow 0.03
 
 
 #define enemy_killTime 120
 #define enemy_acceleration 0.1
-#define enemy_spawnTime 3//1.0//1.75
+#define enemy_spawnTime 0.50//1.0//1.75
 #define accelerateEnemyInterval 1.0
 
 // power eaters
 
-#define PE_speed 0.1//0.5//1.0
+#define PE_speed 1.0//0.5//1.0
 #define PE_tag 2
 
 // super zombie
@@ -121,7 +123,7 @@
 
 // bouncers
 
-#define bouncer_tag 5
+#define bouncer_tag 21
 
 // game
 

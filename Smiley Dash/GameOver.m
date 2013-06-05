@@ -52,9 +52,9 @@ CCLabelTTF *pointsLabel;
         playlabel.position = ccp(size.width/2,(size.height * 4/5));
         stoplabel.position = ccp(size.width/2 + (size.width/3), size.height * 4/5);
         
-        rewindlabel.color = ccc3(255, 255, 255);
-        playlabel.color = ccc3(255, 255, 255);
-        stoplabel.color = ccc3(255, 255, 255);
+        rewindlabel.color = ccc3(200, 200, 200);
+        playlabel.color = ccc3(200, 200, 200);
+        stoplabel.color = ccc3(200, 200, 200);
         
         pointsLabel.position = ccp(size.width/2,(size.height * 1/5));
         pointsLabel.color = ccc3(255, 255, 255);
@@ -65,21 +65,22 @@ CCLabelTTF *pointsLabel;
         [self addChild:stoplabel];
         
         
-        CCMenuItem *rewind = [CCMenuItemImage itemWithNormalImage:@"rewindOn.png" selectedImage:@"rewindOff.png" target:self selector:@selector(rewindTapped:)];
+        CCMenuItem *rewind = [CCMenuItemImage itemWithNormalImage:@"rewindOff.png" selectedImage:@"rewindOn.png" target:self selector:@selector(rewindTapped:)];
         
         CCMenuItem *play;
         
         if (playPoints > 0) {
             
-            play = [CCMenuItemImage itemWithNormalImage:@"playOn.png" selectedImage:@"playOff.png" target:self selector:@selector(playTapped:)];
+            play = [CCMenuItemImage itemWithNormalImage:@"playOff.png" selectedImage:@"playOn.png" target:self selector:@selector(playTapped:)];
         
         } else {
             
-            play = [CCMenuItemImage itemWithNormalImage:@"playOff.png" selectedImage:@"playOn.png" target:self selector:@selector(playTapped:)];
+            play = [CCMenuItemImage itemWithNormalImage:@"playOff.png" selectedImage:@"playOff.png" target:self selector:@selector(playTapped:)];
+            play.color = ccc3(70,70,70);
        
         }
         
-        CCMenuItem *stop = [CCMenuItemImage itemWithNormalImage:@"stopOn.png" selectedImage:@"stopOff.png" target:self selector:@selector(stopTapped:)];
+        CCMenuItem *stop = [CCMenuItemImage itemWithNormalImage:@"stopOff.png" selectedImage:@"stopOn.png" target:self selector:@selector(stopTapped:)];
         
 
         rewind.position = ccp(size.width/2 - (size.width/3), size.height/2);

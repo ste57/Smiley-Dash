@@ -29,6 +29,8 @@ CCLabelTTF *waveLabel;
 /// consider removing aswell as method
 CCSprite *ring;
 
+int spawn;
+
 bool doublePointsActive;
 bool superActive;
 
@@ -51,7 +53,6 @@ int wave, score, labelScore;
 int previousYellowLevel;
 int chosenRedLevel;
 double heroSpeed;
-double spawnTime;
 int order;
 int bouncerSpeedLevel;
 int bouncerID;
@@ -76,7 +77,6 @@ int startParticle;
     previousYellowLevel = 0;
     chosenRedLevel = 0;
     heroSpeed = heroStartSpeed;
-    spawnTime = enemy_spawnTime;
     order = -1;
     bouncerID = 0;
     circleCreated = false;
@@ -84,6 +84,7 @@ int startParticle;
     superHeroStartTime = 0;
     superHeroActive = false;
     timePowerStartTime = 0;
+    spawn = 0;
     
     
 } // finish this at the end
@@ -127,7 +128,7 @@ int startParticle;
 	return self;
 }
 
-+(CCScene *) scene:(int)resume {
++ (CCScene *) scene:(int)resume {
     
 	// 'scene' is an autorelease object.
 	CCScene *scene = [CCScene node];
@@ -149,6 +150,8 @@ int startParticle;
 - (void) increaseTime:(ccTime)dt {
     
     time++;
+    
+    previousTouch = touchLocation;
     
 }
 
@@ -252,7 +255,7 @@ int startParticle;
     // accelerate enemies also acts as a timer, this has to be here
     [self schedule:@selector(accelerateEnemies:) interval:accelerateEnemyInterval];
     // spawns enemies based on spawntime, also needed
-    [self schedule:@selector(addEnemy:) interval:spawnTime];
+    [self schedule:@selector(addEnemy:) interval:enemy_spawnTime];
     // this will have a different spawntime to enemies, also needed
     [self schedule:@selector(powerup:) interval:powerUpSpawn];
     // this update the game and everything in it
@@ -310,7 +313,7 @@ int startParticle;
         if (yVal > winSize.height - sprite.contentSize.width/2 || yVal < sprite.contentSize.height/2) {
             
             yVal = sprite.position.y + ((diffy/z) * speed);
-
+            
         }
         
         sprite.position = ccp(xVal, yVal);
@@ -333,43 +336,50 @@ int startParticle;
 
 - (void) addEnemy:(ccTime)dt{
     
-    if (arc4random() % 10 < 1) {
-        // 10% chance that a power eater will be spawned
+    spawn++;
+    
+    if (wave > 5 || spawn > ((5 - wave))){
         
-        PowerEater * enemy = [PowerEater spriteWithFile:@"powerEater.png"];
+        spawn = 0;
         
-        enemy.speed = PE_speed;
-        enemy.time = setTime;
-        enemy.tag = PE_tag;
-        
-        [self spawnEnemy:enemy tag:PE_tag];
-        
-    } else {
-        // spawn an enemy
-        
-        float speed = 0;
-        
-        Enemy * enemy = [Enemy spriteWithFile:@"normalEnemy.png"];
-        
-        enemy.speed = enemy_speed;
-        enemy.time = setTime;
-        
-        // increase speed of enemy as wave increases
-        
-        if (wave < 5) {
+        if (arc4random() % 10 < 1) {
+            // 10% chance that a power eater will be spawned
             
-            speed = (wave * ((enemy_maxSpeed - enemy_speed)/5)) + enemy_speed;
+            PowerEater * enemy = [PowerEater spriteWithFile:@"powerEater.png"];
+            
+            enemy.speed = PE_speed;
+            enemy.time = setTime;
+            enemy.tag = PE_tag;
+            
+            [self spawnEnemy:enemy tag:PE_tag];
             
         } else {
+            // spawn an enemy
             
-            speed = (4 * ((enemy_maxSpeed - enemy_speed)/5) + enemy_speed);
+            float speed = 0;
             
+            Enemy * enemy = [Enemy spriteWithFile:@"normalEnemy.png"];
+            
+            enemy.speed = enemy_speed;
+            enemy.time = setTime;
+            
+            // increase speed of enemy as wave increases
+            
+            if (wave < 5) {
+                
+                speed = (wave * ((enemy_maxSpeed - enemy_speed)/5)) + enemy_speed;
+                
+            } else {
+                
+                speed = (4 * ((enemy_maxSpeed - enemy_speed)/5) + enemy_speed);
+                
+            }
+            
+            // random maxspeed so all enemies moving at different speeds
+            enemy.maxSpeed = [self randomFloatBetween:enemy_speed and:speed];
+            
+            [self spawnEnemy:enemy tag:enemy_tag];
         }
-        
-        // random maxspeed so all enemies moving at different speeds
-        enemy.maxSpeed = [self randomFloatBetween:speed and:enemy_maxSpeed];
-        
-        [self spawnEnemy:enemy tag:enemy_tag];
     }
 }
 
@@ -377,7 +387,7 @@ int startParticle;
     
     float speed;
     
-    Enemy * enemy = [Enemy spriteWithFile:@"bouncer.png"];
+    Enemy * enemy = [Enemy spriteWithFile:@"superEnemy.png"];
     
     enemy.speed = SE_speed;
     enemy.time = setTime;
@@ -877,8 +887,25 @@ int startParticle;
 - (void) ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     
     UITouch *touch = [touches anyObject];
+    
     touchLocation = [touch locationInView:[touch view]];
     touchLocation = [[CCDirector sharedDirector] convertToGL:touchLocation];
+    
+    double lengthIntersect = [self calculateDistanceBetween:previousTouch and:touchLocation];
+    
+    if (lengthIntersect >= distanceBetweenParticles && superHeroActive == false) {
+        
+        if (heroSpeed > heroStartSpeed) {
+            
+            heroSpeed -= 0.5;
+            
+        } else if (heroSpeed < heroStartSpeed) {
+            
+            heroSpeed = heroStartSpeed;
+            
+        }
+        
+    }
     
     // stop all actions yet again
     if (yellowLevelActive == false) {
@@ -896,11 +923,13 @@ int startParticle;
 }
 
 - (void) ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    
     // touch only moved when touch moved
     touchMoved = NO;
     
     // get touch location
     UITouch *touch = [touches anyObject];
+    
     touchLocation = [touch locationInView:[touch view]];
     touchLocation = [[CCDirector sharedDirector] convertToGL:touchLocation];
     
@@ -912,6 +941,7 @@ int startParticle;
         
         if (superHeroActive == false && lifeLost != true) {
             [hero stopAllActions];
+            heroSpeed = heroStartSpeed;
         }
         
         [self removeAllParticles];
@@ -956,13 +986,14 @@ int startParticle;
                     
                     box.tag = boxSelected;
                     
-                    [box runAction:[CCFadeOut actionWithDuration:0.5]];
+                    box.opacity = 0;
                     
+                    //[box runAction:[CCFadeOut actionWithDuration:0.1]];
                     
-                    CCDelayTime *delay = [CCDelayTime actionWithDuration:2.0];
+                    CCDelayTime *delay = [CCDelayTime actionWithDuration:5.0];
                     CCCallFuncN *remove = [CCCallFuncN actionWithTarget:self selector:@selector(fadeAllOut)];
                     CCSequence *seq = [CCSequence actions:delay, remove, nil];
-                    [box runAction:seq];
+                    [self runAction:seq];
                     
                     [self placeCard];
                     
@@ -971,6 +1002,7 @@ int startParticle;
                     CCDelayTime *timeDelay = [CCDelayTime actionWithDuration:2.0];
                     CCCallFuncN *stop = [CCCallFuncN actionWithTarget:self selector:@selector(stopYellowLevel)];
                     [self runAction:[CCSequence actions:timeDelay, stop, nil]];
+                    
                     break;
                 }
             }
@@ -1038,7 +1070,7 @@ int startParticle;
             [self addChild:card z:3];
             [gameObjects addObject:card];
             
-            [card runAction:[CCSequence actions: [CCDelayTime actionWithDuration:1.0], [CCFadeOut actionWithDuration:3.0], nil]];
+            //[card runAction:[CCSequence actions: [CCDelayTime actionWithDuration:1.0], [CCFadeOut actionWithDuration:3.0], nil]];
             
             break;
         }
@@ -1050,12 +1082,12 @@ int startParticle;
     
     for (CCSprite *box in gameObjects) {
         
-        if (box.tag == boxTag) {
+       // if (box.tag == boxTag) {
             
             [box stopAllActions];
             [box runAction:[CCFadeOut actionWithDuration:1.0]];
             
-        }
+        //}
     }
 }
 
@@ -1159,7 +1191,7 @@ int startParticle;
             double lengthIntersect = [self calculateDistanceBetween:bouncer.position and:hero.position];
             double distanceBetweenSprites = (bouncer.contentSize.width + hero.contentSize.width) / 2;
             
-            if (lengthIntersect <= distanceBetweenSprites) {
+            if (lengthIntersect <= distanceBetweenSprites && lifeLost == false) {
                 
                 if (hero.tag == superHeroTag) {
                     
@@ -1183,9 +1215,17 @@ int startParticle;
                             
                     }
                     
+                    lifeLost = true;
+                    
+                    [hero runAction:[CCSequence actions:[CCDelayTime actionWithDuration:0.7] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
+                        
+                        lifeLost = false;
+                        
+                    }], nil]];
+                    
                 } else if (heroLife > 1) {
                     
-                    // heroLife -= 1;
+                    heroLife --;
                     
                     switch(bouncer.type) {
                             
@@ -1205,6 +1245,24 @@ int startParticle;
                         default:
                             break;
                     }
+                    
+                    
+                    CCFadeTo *fadeIn = [CCFadeTo actionWithDuration:0.5 opacity:50];
+                    CCFadeTo *fadeOut = [CCFadeTo actionWithDuration:0.5 opacity:255];
+                    
+                    CCSequence *pulseSequence = [CCSequence actionOne:fadeIn two:fadeOut];
+                    CCRepeatForever *repeat = [CCRepeatForever actionWithAction:pulseSequence];
+                    [hero runAction:repeat];
+                    
+                    lifeLost = true;
+                    
+                    [hero runAction:[CCSequence actions:[CCDelayTime actionWithDuration:retreatTime] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
+                        
+                        lifeLost = false;
+                        [hero stopAllActions];
+                        hero.opacity = 255;
+                        
+                    }], nil]];
                     
                 } else {
                     
@@ -1267,6 +1325,7 @@ int startParticle;
 - (void) createBouncers:(ccTime)dt {
     
     if (enemies.count < levelEnemyCount) {
+
         
         CGSize winSize = [CCDirector sharedDirector].winSize;
         
@@ -1505,7 +1564,7 @@ int startParticle;
         
         // RANDOM SPAWNING
         int maxXpos = (winSize.width - (powerup.contentSize.width / 2)) + 1;
-        int maxYpos = (winSize.height - (powerup.contentSize.height / 2)) + 1;
+        int maxYpos = (winSize.height - (powerup.contentSize.height / 2)) - 25;
         
         int xpos = arc4random() % maxXpos;
         int ypos = arc4random() % maxYpos;
@@ -1562,11 +1621,23 @@ int startParticle;
         
     } else if (powerup.tag == starNumber && superActive == false) {
         
+        lifeLost = false;
+        [hero stopAllActions];
+        hero.opacity = 255;
+        
         [self activateSuperhero];
         
     } else if (powerup.tag == heartNumber) {
         
-        heroLife += 1;
+        if (heroLife < heroMaxLife) {
+            
+            heroLife += 1;
+            
+        } else {
+            
+            score += 100;
+            
+        }
         
     } else if (powerup.tag == coinNumber) {
         
@@ -1609,20 +1680,34 @@ int startParticle;
     
     if ((time - superHeroStartTime) < superHeroTime - 1 || superActive == true) {
         
-        ring = [CCSprite spriteWithFile:@"superEffect.png"];
+        if (ring == nil) {
+            
+            ring = [CCSprite spriteWithFile:@"superEffect.png"];
+            
+            ring.position = hero.position;
+            
+            [gameObjects addObject:ring];
+            [self addChild:ring z:2];
+            
+        } else {
+            
+            [ring stopAllActions];
+            ring.opacity = 255;
+            ring.scale = 1.0;
+        }
         
         [ring runAction:[CCSequence actions:[CCFadeOut actionWithDuration:0.7] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
-            [self addToDeletionPile:ring], ring = nil, [self createSuperEffect];
+            [self createSuperEffect];
         }], nil]];
         
         [ring runAction:[CCScaleTo actionWithDuration: 0.7 scale:0.8]];
         
         
-        ring.position = hero.position;
-        ring.tag = actionEffect;
+    } else if (superHeroActive == false) {
         
-        [gameObjects addObject:ring];
-        [self addChild:ring z:2];
+        [self addToDeletionPile:ring];
+        [self deleteFromDeletionPile];
+        ring = nil;
         
     }
 }
@@ -1729,9 +1814,9 @@ int startParticle;
         if (particle.tag != circleParticle) {
             
             // make the human chase the last particle
-            [self movePos:particle.position.x yVal:particle.position.y chase:hero speed:heroSpeed*2];
+            [self movePos:particle.position.x yVal:particle.position.y chase:hero speed:heroSpeed];
             
-            if (ring != nil && superHeroActive) {
+            if (ring != nil && superHeroActive == true) {
                 ring.position = hero.position;
             }
             
@@ -1995,6 +2080,22 @@ int startParticle;
 }
 
 - (void) update:(ccTime)dt {
+    
+    if (superHeroActive == false) {
+        
+        double lengthIntersect = [self calculateDistanceBetween:previousTouch and:touchLocation];
+        
+        if (lengthIntersect < distanceBetweenParticles) {
+            
+            if (heroSpeed < heroStartSpeed*2) {
+                
+                heroSpeed += 0.1;
+            }
+            
+        }
+        
+    }
+    
     
     
     if (timePowerActive == true && (time - timePowerStartTime) > timePowerActiveTime) {
