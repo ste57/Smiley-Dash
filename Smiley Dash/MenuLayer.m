@@ -10,6 +10,7 @@
 #import "GameLayer.h"
 #import "Config.h"
 #import "TutorialLayer.h"
+#import "StoreLayer.h"
 
 
 @implementation MenuLayer
@@ -83,7 +84,6 @@
         [self addChild:label z:4];
         
         
-        
         CCMenuItem *play = [CCMenuItemImage itemWithNormalImage:@"MenuPlay.png" selectedImage:@"MenuPlayOn.png" target:self selector:@selector(playTapped:)];
         
         CCMenuItem *guide = [CCMenuItemImage itemWithNormalImage:@"MenuGuide.png" selectedImage:@"MenuGuideOn.png" target:self selector:@selector(guideTapped:)];
@@ -92,16 +92,15 @@
         
         CCMenuItem *about = [CCMenuItemImage itemWithNormalImage:@"MenuAbout.png" selectedImage:@"MenuAboutOn.png" target:self selector:@selector(aboutTapped:)];
         
-        play.position = ccp(size.width/2, size.height/5 * 4);
-        guide.position = ccp(size.width/2, (size.height/5 * 3));
-        store.position = ccp(size.width/2, (size.height/5 * 2));
-        about.position = ccp(size.width/2, (size.height/5 * 1));
+        play.position = ccp(size.width/2, size.height/5 * 2);
+        guide.position = ccp(size.width/2 - 75, (size.height/5));
+        store.position = ccp(size.width/2 + 75, (size.height/5));
+        about.position = ccp(size.width/11, size.height/2);
         
         CCMenu *menu = [CCMenu menuWithItems:play, guide, store, about, nil];
         menu.position = CGPointZero;
         
         [self addChild:menu];
-        
         
 	}
     
@@ -111,7 +110,7 @@
 
 - (void) playTapped:(id)sender {
     //[[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[GameLayer scene:game_restart]]];
-    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[TutorialLayer scene]]];
+   [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[TutorialLayer scene]]];
 }
 
 - (void) guideTapped:(id)sender {
@@ -119,14 +118,11 @@
 }
 
 - (void) storeTapped:(id)sender {
-   printf("yet to be done!");
+   [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[StoreLayer scene]]];
 }
 
 - (void) aboutTapped:(id)sender {
     printf("yet to be done!");
 }
-
-
-
 
 @end

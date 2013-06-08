@@ -10,10 +10,8 @@
 
 #define setTime 1.0
 #define distanceBetweenParticles 10
-#define superHeroSpeed 2.0
+#define superHeroSpeed 3.0
 #define superHeroTime 10.0
-
-
 
 #define heroStartSpeed 2.0//1.4
 
@@ -33,7 +31,7 @@
 #define displayChange 50
 #define redLevelScore 5000
 #define redLevelTime 30.0
-#define yellowLevelChance 100//20 // percent
+#define yellowLevelChance 20 // percent
 #define boxTag 3
 #define boxSelected 4
 #define cardNumber 5
@@ -95,8 +93,8 @@
 
 // zombies
 
-#define startEnemies 1//10
-#define enemyAddition 0//5//10 //5
+#define startEnemies 10
+#define enemyAddition 5//10 //5
 
 #define enemyScore 1000
 #define enemy_tag 1

@@ -9,21 +9,22 @@
 #import "TutorialLayer.h"
 #import "Config.h"
 #import "GameLayer.h"
+#import "MenuLayer.h"
 
 NSMutableArray * particles;
-NSMutableArray * gameObjects;
+NSMutableArray * objects;
 NSMutableArray * instructions;
 
-int tutorialStage = 0;
-bool stageRunning = false;
-bool touchMoved = NO;
-CCSprite *hero;
+int tutorialStage;
+bool stageRunning;
+bool touchMoved;
+CCSprite *testHero;
 CGPoint touchLocation;
-double heroSpeed = heroStartSpeed;
-int startParticle = 0;
+double heroSpeed;
+int startParticle;
 int particleLimit;
-int circlesDrawn = 0;
-bool circleCreated = false;
+int circlesDrawn;
+bool circleCreated;
 
 @implementation TutorialLayer
 
@@ -52,12 +53,24 @@ bool circleCreated = false;
     return (double) lengthIntersect;
 }
 
+- (void) setValues {
+    heroSpeed = heroStartSpeed;
+    startParticle = 0;
+    circlesDrawn = 0;
+    circleCreated = false;
+    tutorialStage = 0;
+    stageRunning = false;
+    touchMoved = NO;
+}
+
 - (id) init {
     
 	if( (self=[super init])) {
         
+        [self removeAllChildrenWithCleanup:YES];
+        
         particles = [[NSMutableArray alloc] init];
-        gameObjects = [[NSMutableArray alloc] init];
+        objects = [[NSMutableArray alloc] init];
         instructions = [[NSMutableArray alloc] init];
         
         // ask director for the window size
@@ -99,22 +112,25 @@ bool circleCreated = false;
         [self addChild: background];
         
         // hero sprite
-        hero = [CCSprite spriteWithFile:@"hero.png"];
-        hero.position = ccp(winSize.width/2,winSize.height/2);
-        hero.tag = heroTag;
+        testHero = [CCSprite spriteWithFile:@"hero.png"];
+        testHero.position = ccp(winSize.width/2,winSize.height/2);
+        testHero.tag = heroTag;
         
-        [self addChild:hero z:2];
+        [self addChild:testHero z:2];
         
         // wave label
         label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"TUTORIAL"] fontName:@"Baccarat" fontSize:20];
         label.position = ccp(winSize.width/2, winSize.height - 10);
         [self addChild:label z:1];
         
+        [self setValues];
+        
+        self.touchEnabled = YES;
+        [self schedule:@selector(updates:)];
+
+        
     }
-    
-    [self schedule:@selector(update:)];
-    
-    self.touchEnabled = YES;
+
 	return self;
 }
 
@@ -135,9 +151,9 @@ bool circleCreated = false;
         
     } else if (lengthIntersect >= distanceBetweenParticles*2 && lengthIntersect < distanceBetweenParticles*3) {
         
-        double lengthIntersect = [self calculateDistanceBetween:touchLocation and:hero.position];
+        double lengthIntersect = [self calculateDistanceBetween:touchLocation and:testHero.position];
         
-        if (lengthIntersect > hero.contentSize.width + 50) {
+        if (lengthIntersect > testHero.contentSize.width + 50) {
             
             CCSprite *firstParticle = [particles lastObject];
             
@@ -161,9 +177,9 @@ bool circleCreated = false;
         
     } else if (lengthIntersect >= distanceBetweenParticles*3) {
         
-        double lengthIntersect = [self calculateDistanceBetween:touchLocation and:hero.position];
+        double lengthIntersect = [self calculateDistanceBetween:touchLocation and:testHero.position];
         
-        if (lengthIntersect > hero.contentSize.width + 50) {
+        if (lengthIntersect > testHero.contentSize.width + 50) {
             
             CCSprite *firstParticle = [particles lastObject];
             
@@ -198,9 +214,9 @@ bool circleCreated = false;
         
     } else if (lengthIntersect >= distanceBetweenParticles*3 && lengthIntersect < distanceBetweenParticles*4){
         
-        double lengthIntersect = [self calculateDistanceBetween:touchLocation and:hero.position];
+        double lengthIntersect = [self calculateDistanceBetween:touchLocation and:testHero.position];
         
-        if (lengthIntersect > hero.contentSize.width + 50) {
+        if (lengthIntersect > testHero.contentSize.width + 50) {
             
             CCSprite *firstParticle = [particles lastObject];
             
@@ -329,7 +345,7 @@ bool circleCreated = false;
                     startParticle = j + 1;
                     circleCreated = true;
                     
-                    for (CCSprite *enemy in gameObjects) {
+                    for (CCSprite *enemy in objects) {
                         
                         float enX = enemy.position.x;
                         float enY = enemy.position.y;
@@ -385,13 +401,11 @@ bool circleCreated = false;
     
     NSMutableArray * toDelete = [[NSMutableArray alloc] init];
     
-    if (circleCreated == true) {
-        
-        printf("  %i   ", circlesDrawn);
+    if (tutorialStage != 0 || circleCreated == true) {
        
         [self removeAllParticles];
         
-        for (CCSprite *enemy in gameObjects) {
+        for (CCSprite *enemy in objects) {
             
             if (enemy.tag == frozenEnemy) {
 
@@ -411,19 +425,33 @@ bool circleCreated = false;
             
             [instructions removeAllObjects];
         
-            for (CCSprite *sprite in gameObjects) {
+            for (CCSprite *sprite in objects) {
                 
                 [self removeChild:sprite];
                 
             }
         
-            [gameObjects removeAllObjects];
+            [objects removeAllObjects];
         
             stageRunning = false;
         
             if (toDelete.count == tutorialStage) {
 
-              tutorialStage ++;
+                tutorialStage ++;
+                
+                if (tutorialStage > 2) {
+                    
+                    [self unschedule:@selector(updates:)];
+                    [self removeAllChildrenWithCleanup:YES];
+                    [self removeFromParentAndCleanup:YES];
+                    
+                    [particles removeAllObjects];
+                    [instructions removeAllObjects];
+                    [objects removeAllObjects];
+
+                    [[CCDirector sharedDirector] replaceScene:[CCTransitionFadeTR transitionWithDuration:2.0 scene:[GameLayer scene:game_restart]]];
+                    
+                }
             
             }
         }
@@ -438,13 +466,14 @@ bool circleCreated = false;
     
     for (CCSprite *sprite in toDelete) {
         [self removeChild:sprite];
-        [gameObjects removeObject:sprite];
+        [objects removeObject:sprite];
     }
     
     circleCreated = false;
     
     [toDelete release];
     toDelete = nil;
+    touchMoved = NO;
     
 }
 
@@ -474,7 +503,7 @@ bool circleCreated = false;
     touchLocation = [[CCDirector sharedDirector] convertToGL:touchLocation];
     
     // calculate the distance between the touch and hero center
-    double lengthIntersect = [self calculateDistanceBetween:hero.position and:touchLocation];
+    double lengthIntersect = [self calculateDistanceBetween:testHero.position and:touchLocation];
     
     // for some reason touchLocation is set to 0,0 at first (player is never going to touch here anyway)
     if (touchLocation.x != 0 && touchLocation.y != 0) {
@@ -484,7 +513,7 @@ bool circleCreated = false;
         CCSprite *particle;
         
         // if touch is anywhere in the radius of the sprite plus around it then set touch to be moved and allow player to move it
-        if (lengthIntersect <= hero.contentSize.width + 50) {
+        if (lengthIntersect <= testHero.contentSize.width + 50) {
             
             touchMoved = YES;
             particle = [CCSprite spriteWithFile:@"particle.png"];
@@ -554,49 +583,49 @@ bool circleCreated = false;
         [instructions addObject:instruction];
         
         
-        star = [CCSprite spriteWithFile:@"tutorialStar.png"];
+        star = [CCSprite spriteWithFile:@"coin.png"];
         star.position = ccp(winSize.width/4,winSize.height/4 * 3);
         
         [self addChild:star z:2];
-        [gameObjects addObject:star];
+        [objects addObject:star];
         [star runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:2.0 angle:180]]];
         
-        star = [CCSprite spriteWithFile:@"tutorialStar.png"];
+        star = [CCSprite spriteWithFile:@"coin.png"];
         star.position = ccp(winSize.width/4 * 3,winSize.height/4 * 3);
         
         [self addChild:star z:2];
-        [gameObjects addObject:star];
+        [objects addObject:star];
         [star runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:2.0 angle:180]]];
         
-        star = [CCSprite spriteWithFile:@"tutorialStar.png"];
+        star = [CCSprite spriteWithFile:@"coin.png"];
         star.position = ccp(winSize.width/4,winSize.height/4);
         
         [self addChild:star z:2];
-        [gameObjects addObject:star];
+        [objects addObject:star];
         [star runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:2.0 angle:180]]];
         
-        star = [CCSprite spriteWithFile:@"tutorialStar.png"];
+        star = [CCSprite spriteWithFile:@"coin.png"];
         star.position = ccp(winSize.width/4 * 3,winSize.height/4);
         
         [self addChild:star z:2];
-        [gameObjects addObject:star];
+        [objects addObject:star];
         [star runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:2.0 angle:180]]];
         
     }
     
-    for (CCSprite * star in gameObjects) {
+    for (CCSprite * star in objects) {
         
-        if (CGRectIntersectsRect(hero.boundingBox, star.boundingBox)) {
+        if (CGRectIntersectsRect(testHero.boundingBox, star.boundingBox)) {
             
             [self removeChild:star];
-            [gameObjects removeObject:star];
+            [objects removeObject:star];
             break;
             
         }
         
     }
     
-    if (gameObjects.count == 0) {
+    if (objects.count == 0) {
         
         
         for (CCSprite *label in instructions) {
@@ -646,7 +675,7 @@ bool circleCreated = false;
         
         heroSpeed = 0;
         
-        hero.position = ccp(winSize.width/11, winSize.height/10 * 7.95);
+        testHero.position = ccp(winSize.width/11, winSize.height/10 * 7.95);
         
         CCSprite *stage;
         
@@ -657,7 +686,7 @@ bool circleCreated = false;
         
         // add the label as a child to this Layer
         [self addChild: stage];
-        [gameObjects addObject:stage];
+        [objects addObject:stage];
 
         
         CCSprite * enemy;
@@ -667,7 +696,7 @@ bool circleCreated = false;
         enemy.tag = enemy_tag;
         
         [self addChild:enemy z:2];
-        [gameObjects addObject:enemy];
+        [objects addObject:enemy];
         
     }
     
@@ -686,7 +715,7 @@ bool circleCreated = false;
         
         heroSpeed = 0.3;
         
-        hero.position = ccp(winSize.width/11, winSize.height/2);
+        testHero.position = ccp(winSize.width/11, winSize.height/2);
         
         CCLabelTTF *instruction;
         
@@ -710,14 +739,14 @@ bool circleCreated = false;
         enemy.tag = enemy_tag;
     
         [self addChild:enemy z:2];
-        [gameObjects addObject:enemy];
+        [objects addObject:enemy];
     
         enemy = [CCSprite spriteWithFile:@"normalEnemy.png"];
         enemy.position = ccp(winSize.width/4 * 3,winSize.height/2);
         enemy.tag = enemy_tag;
     
         [self addChild:enemy z:2];
-        [gameObjects addObject:enemy];
+        [objects addObject:enemy];
     }
     
 }
@@ -765,10 +794,10 @@ bool circleCreated = false;
         if (particle.tag != circleParticle) {
             
             // make the human chase the last particle
-            [self movePos:particle.position.x yVal:particle.position.y chase:hero speed:heroSpeed];
+            [self movePos:particle.position.x yVal:particle.position.y chase:testHero speed:heroSpeed];
             
             // if the human moves to the particle
-            double lengthIntersect = [self calculateDistanceBetween:hero.position and:particle.position];
+            double lengthIntersect = [self calculateDistanceBetween:testHero.position and:particle.position];
             
             // so that the powereater overlaps the powerup
             if (lengthIntersect <= particle.contentSize.width) {
@@ -805,16 +834,22 @@ bool circleCreated = false;
     
     [super dealloc];
     [particles release];
-    [gameObjects release];
+    [objects release];
     [instructions release];
     
     instructions = nil;
-    gameObjects = nil;
+    objects = nil;
     particles = nil;
     
 }
 
-- (void) update:(ccTime)dt {
+- (void) updates:(ccTime)dt {
+    
+    [self followParticles];
+    
+    if (particles.count > 0) {
+        [self checkDrawingCircle];
+    }
     
     if (tutorialStage == 0) {
         
@@ -828,18 +863,6 @@ bool circleCreated = false;
         
         [self runThirdStage];
         
-    } else {
-        
-        [self schedule:@selector(update:)];
-        [self removeAllChildrenWithCleanup:YES];
-        [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:2.0 scene:[GameLayer scene:game_restart]]];
-        
-    }
-    
-    [self followParticles];
-    
-    if (particles.count > 0) {
-        [self checkDrawingCircle];
     }
     
 }

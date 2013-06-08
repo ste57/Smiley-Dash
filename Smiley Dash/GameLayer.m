@@ -16,12 +16,15 @@
 NSMutableArray * enemies;
 NSMutableArray * powerups;
 NSMutableArray * gameObjects;
-NSMutableArray * particles;
+NSMutableArray * particleArray;
 NSMutableArray * hearts;
 NSMutableArray * spriteToDelete;
 
 CCLabelTTF *scoreLabel;
 CCLabelTTF *waveLabel;
+
+CCSprite *pauseButton;
+CCSprite *pauseBackground;
 
 //ccColor3B oldColor;
 
@@ -33,6 +36,7 @@ int spawn;
 
 bool doublePointsActive;
 bool superActive;
+bool paused;
 
 int circlesDrawn;
 int multiplier;
@@ -85,6 +89,8 @@ int startParticle;
     superHeroActive = false;
     timePowerStartTime = 0;
     spawn = 0;
+    pauseButton = nil;
+    pauseBackground = nil;
     
     
 } // finish this at the end
@@ -122,6 +128,7 @@ int startParticle;
         self.touchEnabled = YES;
         
         time = 0;
+        paused = false;
         [self schedule:@selector(increaseTime:) interval:1.0];
         
 	}
@@ -162,7 +169,7 @@ int startParticle;
     enemies = [[NSMutableArray alloc] init];
     powerups = [[NSMutableArray alloc] init];
     gameObjects = [[NSMutableArray alloc] init];
-    particles = [[NSMutableArray alloc] init];
+    particleArray = [[NSMutableArray alloc] init];
     hearts = [[NSMutableArray alloc] init];
     spriteToDelete = [[NSMutableArray alloc] init];
     
@@ -570,13 +577,13 @@ int startParticle;
         
         ccColor3B color = [self changeColour:circlesDrawn];
         
-        for (int i = startParticle; !dobreak && i < particles.count; i++) {
+        for (int i = startParticle; !dobreak && i < particleArray.count; i++) {
             
-            CCSprite * firstParticle = [particles objectAtIndex:i];
+            CCSprite * firstParticle = [particleArray objectAtIndex:i];
             
-            for (int j = i + 1; j < particles.count; j++) {
+            for (int j = i + 1; j < particleArray.count; j++) {
                 
-                CCSprite * secondParticle = [particles objectAtIndex:j];
+                CCSprite * secondParticle = [particleArray objectAtIndex:j];
                 
                 double lengthIntersect = [self calculateDistanceBetween:firstParticle.position and:secondParticle.position];
                 
@@ -584,7 +591,7 @@ int startParticle;
                     
                     for (int a = i + 1 ; a < j + 1; a++) {
                         
-                        CCSprite * particle = [particles objectAtIndex:a];
+                        CCSprite * particle = [particleArray objectAtIndex:a];
                         
                         [particle setTexture:[[CCTextureCache sharedTextureCache] addImage:@"particleCircle.png"]];
                         
@@ -685,7 +692,7 @@ int startParticle;
 
 - (void) drawParticles {
     
-    CCSprite *particle = [particles lastObject];
+    CCSprite *particle = [particleArray lastObject];
     
     double lengthIntersect = [self calculateDistanceBetween:touchLocation and:particle.position];
     
@@ -695,7 +702,7 @@ int startParticle;
         CCSprite *particle;
         particle = [CCSprite spriteWithFile:@"particle.png"];
         particle.position = touchLocation;
-        [particles addObject:particle];
+        [particleArray addObject:particle];
         [self addChild:particle];
         
     } else if (lengthIntersect >= distanceBetweenParticles*2 && lengthIntersect < distanceBetweenParticles*3) {
@@ -704,7 +711,7 @@ int startParticle;
         
         if (lengthIntersect > hero.contentSize.width + 50) {
             
-            CCSprite *firstParticle = [particles lastObject];
+            CCSprite *firstParticle = [particleArray lastObject];
             
             double diffx = (touchLocation.x - firstParticle.position.x)/2;
             double diffy = (touchLocation.y - firstParticle.position.y)/2;
@@ -715,13 +722,13 @@ int startParticle;
             CCSprite *particle;
             particle = [CCSprite spriteWithFile:@"particle.png"];
             particle.position = ccp(diffx,diffy);
-            [particles addObject:particle];
+            [particleArray addObject:particle];
             [self addChild:particle];
         }
         
         particle = [CCSprite spriteWithFile:@"particle.png"];
         particle.position = touchLocation;
-        [particles addObject:particle];
+        [particleArray addObject:particle];
         [self addChild:particle];
         
     } else if (lengthIntersect >= distanceBetweenParticles*3) {
@@ -730,7 +737,7 @@ int startParticle;
         
         if (lengthIntersect > hero.contentSize.width + 50) {
             
-            CCSprite *firstParticle = [particles lastObject];
+            CCSprite *firstParticle = [particleArray lastObject];
             
             double diffx = (touchLocation.x - firstParticle.position.x)/3;
             double diffy = (touchLocation.y - firstParticle.position.y)/3;
@@ -741,7 +748,7 @@ int startParticle;
             CCSprite *particle;
             particle = [CCSprite spriteWithFile:@"particle.png"];
             particle.position = ccp(diffx,diffy);
-            [particles addObject:particle];
+            [particleArray addObject:particle];
             [self addChild:particle];
             
             diffx = ((touchLocation.x - firstParticle.position.x)/3) * 2;
@@ -752,13 +759,13 @@ int startParticle;
             
             particle = [CCSprite spriteWithFile:@"particle.png"];
             particle.position = ccp(diffx,diffy);
-            [particles addObject:particle];
+            [particleArray addObject:particle];
             [self addChild:particle];
         }
         
         particle = [CCSprite spriteWithFile:@"particle.png"];
         particle.position = touchLocation;
-        [particles addObject:particle];
+        [particleArray addObject:particle];
         [self addChild:particle];
         
     } else if (lengthIntersect >= distanceBetweenParticles*3 && lengthIntersect < distanceBetweenParticles*4){
@@ -767,7 +774,7 @@ int startParticle;
         
         if (lengthIntersect > hero.contentSize.width + 50) {
             
-            CCSprite *firstParticle = [particles lastObject];
+            CCSprite *firstParticle = [particleArray lastObject];
             
             double diffx = (touchLocation.x - firstParticle.position.x)/3;
             double diffy = (touchLocation.y - firstParticle.position.y)/3;
@@ -778,7 +785,7 @@ int startParticle;
             CCSprite *particle;
             particle = [CCSprite spriteWithFile:@"particle.png"];
             particle.position = ccp(diffx,diffy);
-            [particles addObject:particle];
+            [particleArray addObject:particle];
             [self addChild:particle];
             
             diffx = ((touchLocation.x - firstParticle.position.x)/3) * 2;
@@ -789,13 +796,13 @@ int startParticle;
             
             particle = [CCSprite spriteWithFile:@"particle.png"];
             particle.position = ccp(diffx,diffy);
-            [particles addObject:particle];
+            [particleArray addObject:particle];
             [self addChild:particle];
         }
         
         particle = [CCSprite spriteWithFile:@"particle.png"];
         particle.position = touchLocation;
-        [particles addObject:particle];
+        [particleArray addObject:particle];
         [self addChild:particle];
         
     }
@@ -803,7 +810,7 @@ int startParticle;
 
 - (void) ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     
-    if (circleCreated == true) {
+    if (circleCreated == true && paused == false) {
         
         CCSprite * select;
         int enemy_Score = 0;
@@ -893,7 +900,7 @@ int startParticle;
     
     double lengthIntersect = [self calculateDistanceBetween:previousTouch and:touchLocation];
     
-    if (lengthIntersect >= distanceBetweenParticles && superHeroActive == false) {
+    if (lengthIntersect >= distanceBetweenParticles && superHeroActive == false && paused == false) {
         
         if (heroSpeed > heroStartSpeed) {
             
@@ -924,6 +931,8 @@ int startParticle;
 
 - (void) ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
+    CGSize winSize = [[CCDirector sharedDirector] winSize];
+    
     // touch only moved when touch moved
     touchMoved = NO;
     
@@ -933,11 +942,44 @@ int startParticle;
     touchLocation = [touch locationInView:[touch view]];
     touchLocation = [[CCDirector sharedDirector] convertToGL:touchLocation];
     
+    
+    if (touchLocation.y > (winSize.height/10 * 9) && yellowLevelActive != true) {
+        
+        [self pause];
+    }
+    
+    if (paused == true && pauseButton != nil) {
+        
+        if (CGRectContainsPoint(pauseButton.boundingBox, touchLocation)) {
+            
+            paused = false;
+            
+            [self removeChild:pauseBackground];
+            [self removeChild:pauseButton];
+
+            if (redLevelActive == true) {
+                [self schedule:@selector(createBouncers:) interval:bouncerInterval];
+                [self schedule:@selector(updateBouncers:)];
+                [self schedule:@selector(stopRedLevel:) interval: redLevelTime];
+                
+                
+                [self schedule:@selector(accelerateEnemies:) interval:accelerateEnemyInterval];
+                [self schedule:@selector(update:)];
+            } else {
+                
+                [self scheduleMethods];
+                
+            }
+            
+            
+        }
+    }
+    
     // calculate the distance between the touch and hero center
     double lengthIntersect = [self calculateDistanceBetween:hero.position and:touchLocation];
     
     // for some reason touchLocation is set to 0,0 at first (player is never going to touch here anyway)
-    if (touchLocation.x != 0 && touchLocation.y != 0 && yellowLevelActive == false) {
+    if (touchLocation.x != 0 && touchLocation.y != 0 && yellowLevelActive == false && paused == false) {
         
         if (superHeroActive == false && lifeLost != true) {
             [hero stopAllActions];
@@ -971,10 +1013,10 @@ int startParticle;
         // stop any movements made by the hero
         particle.position = touchLocation;
         
-        [particles addObject:particle];
+        [particleArray addObject:particle];
         [self addChild:particle];
         
-    } else if (yellowLevelActive == true) {
+    } else if (yellowLevelActive == true && paused == false) {
         
         for (CCSprite *box in gameObjects) {
             
@@ -999,7 +1041,7 @@ int startParticle;
                     
                     yellowLevelActive = false;
                     
-                    CCDelayTime *timeDelay = [CCDelayTime actionWithDuration:2.0];
+                    CCDelayTime *timeDelay = [CCDelayTime actionWithDuration:5.0];
                     CCCallFuncN *stop = [CCCallFuncN actionWithTarget:self selector:@selector(stopYellowLevel)];
                     [self runAction:[CCSequence actions:timeDelay, stop, nil]];
                     
@@ -1007,6 +1049,38 @@ int startParticle;
                 }
             }
         }
+        
+    }
+    
+}
+
+- (void) pause {
+    
+    if (paused != true) {
+        
+        paused = true;
+    
+        CGSize winSize = [[CCDirector sharedDirector] winSize];
+    
+        if((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 568)) {
+        
+            pauseBackground = [CCSprite spriteWithFile:@"pause-568h.png"];
+        
+        } else {
+        
+            pauseBackground = [CCSprite spriteWithFile:@"pause.png"];
+        
+        }
+    
+        pauseBackground.position = ccp(winSize.width/2, winSize.height/2);
+        [self addChild:pauseBackground z:5];
+            
+        [self unscheduleAllSelectors];
+        [self schedule:@selector(increaseTime:) interval:1.0];
+        
+        pauseButton = [CCSprite spriteWithFile:@"playOff.png"];
+        pauseButton.position = ccp(winSize.width/2, winSize.height/2);
+        [self addChild:pauseButton z:6];
         
     }
     
@@ -1133,7 +1207,7 @@ int startParticle;
     
     for (CCSprite *sprite in spriteToDelete) {
         
-        [particles removeObject:sprite];
+        [particleArray removeObject:sprite];
         [self removeChild:sprite cleanup:YES];
         
     }
@@ -1400,7 +1474,7 @@ int startParticle;
     [self schedule:@selector(accelerateEnemies:) interval:accelerateEnemyInterval];
     [self schedule:@selector(update:)];
     
-} // consider...
+}
 
 - (void) stopRedLevel:(ccTime)dt {
     
@@ -1773,23 +1847,23 @@ int startParticle;
 
 - (void) removeAllParticles {
     
-    if (particles.count > 0) {
+    if (particleArray.count > 0) {
         
-        for (CCSprite *particle in particles) {
+        for (CCSprite *particle in particleArray) {
             [self removeChild:particle cleanup:YES];
         }
     }
     
-    [particles removeAllObjects];
+    [particleArray removeAllObjects];
 }
 
 - (CCSprite*) getParticle {
     
     CCSprite *particle;
     
-    for (int i = 0; i < particles.count; i++) {
+    for (int i = 0; i < particleArray.count; i++) {
         
-        particle = [particles objectAtIndex: i];
+        particle = [particleArray objectAtIndex: i];
         
         if (particle.tag != circleParticle) {
             break;
@@ -1804,7 +1878,7 @@ int startParticle;
     
     CCSprite* particle;
     
-    if (particles.count > 0) {
+    if (particleArray.count > 0) {
         
         // get most recent particle
         // CCSprite* particle = [particles objectAtIndex: 0];
@@ -1826,7 +1900,7 @@ int startParticle;
             // so that the powereater overlaps the powerup
             if (lengthIntersect <= particle.contentSize.width) {
                 
-                [particles removeObject: particle];
+                [particleArray removeObject: particle];
                 [self removeChild:particle cleanup:YES];
                 
                 if (startParticle > 0) {
@@ -1838,12 +1912,12 @@ int startParticle;
     }
     
     // particle limit = 300
-    if (particles.count > particleLimit) {
+    if (particleArray.count > particleLimit) {
         
         // remove latest particle
         particle = [self getParticle];
         
-        [particles removeObject: particle];
+        [particleArray removeObject: particle];
         [self removeChild:particle cleanup:YES];
         
         if (startParticle > 0) {
@@ -1860,14 +1934,14 @@ int startParticle;
     [powerups release];
     [enemies release];
     [gameObjects release];
-    [particles release];
+    [particleArray release];
     [hearts release];
     [spriteToDelete release];
     
     powerups = nil;
     enemies = nil;
     gameObjects = nil;
-    particles = nil;
+    particleArray = nil;
     hearts = nil;
     spriteToDelete = nil;
     
@@ -1887,9 +1961,9 @@ int startParticle;
     for (Enemy *enemy in enemies) {
         
         
-        if (particles.count > 0) {
+        if (particleArray.count > 0) {
             
-            for (CCSprite *particle in particles) {
+            for (CCSprite *particle in particleArray) {
                 
                 if (enemy.tag != frozenEnemy && circleCreated == true) {
                     
