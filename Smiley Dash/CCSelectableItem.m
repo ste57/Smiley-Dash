@@ -35,11 +35,11 @@
     _isSelected = isSelected;
     
     if(_isSelected){
-        //self.color = ccc3(_selectedColor.r, _selectedColor.g, _selectedColor.b);
+        self.color = ccc3(_selectedColor.r, _selectedColor.g, _selectedColor.b);
         self.opacity = _selectedColor.a;
     }
     else{
-        //self.color = ccc3(_normalColor.r, _normalColor.g, _normalColor.b);
+        self.color = ccc3(_normalColor.r, _normalColor.g, _normalColor.b);
         self.opacity = _normalColor.a;
     }
 }

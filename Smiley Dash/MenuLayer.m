@@ -41,8 +41,13 @@
         
         if (![prefs objectForKey:@"firstRun"]) {
             // add this for when tutorial is being done
+            
             [prefs setObject:[NSDate date] forKey:@"firstRun"];
             [prefs setInteger:startPlayPoints forKey:@"playPoints"];
+
+            NSString *backgroundString = @"bg1";
+            [prefs setObject:backgroundString forKey:@"background"];
+            
         }
 
         
@@ -110,7 +115,7 @@
 
 - (void) playTapped:(id)sender {
     //[[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[GameLayer scene:game_restart]]];
-   [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[TutorialLayer scene]]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[TutorialLayer scene]]];
 }
 
 - (void) guideTapped:(id)sender {

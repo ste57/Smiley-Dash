@@ -255,23 +255,33 @@
 #ifdef __CC_PLATFORM_IOS
 -(BOOL) ccTouchBegan:(UITouch *)touch withEvent:(UIEvent *)event
 {
+    CGSize size = [[CCDirector sharedDirector] winSize];
+    
     CGPoint touchPoint = [touch locationInView:[touch view]];
     touchPoint = [[CCDirector sharedDirector] convertToGL:touchPoint];
     
-    // Swallow touches
-    BOOL result = (CGRectContainsPoint(_rect, touchPoint) || !_isSwallowTouches);
+    if (touchPoint.x > size.width/5.5) {
     
-    _isDragging = result;
+        // Swallow touches
+        BOOL result = (CGRectContainsPoint(_rect, touchPoint) || !_isSwallowTouches);
     
-    _startSwipe = CGPointMake(_offset.x - touchPoint.x, _offset.y - touchPoint.y);
+        _isDragging = result;
     
-    _isFingerMoved = NO;
+        _startSwipe = CGPointMake(_offset.x - touchPoint.x, _offset.y - touchPoint.y);
     
-    _startTime = CACurrentMediaTime();
-    _clickedPoint = touchPoint;
-    _activatedEvent = result;
+        _isFingerMoved = NO;
     
-    return result;
+        _startTime = CACurrentMediaTime();
+        _clickedPoint = touchPoint;
+        _activatedEvent = result;
+    
+        return result;
+        
+    } else {
+        
+        return false;
+        
+    }
 }
 
 - (void)ccTouchMoved:(UITouch *)touch withEvent:(UIEvent *)event
@@ -470,7 +480,7 @@
 #endif
 
 -(void)setSelectedItemIndex:(NSInteger)index{
-    /*id currentChild = [self.children objectAtIndex:index];
+    id currentChild = [self.children objectAtIndex:index];
     id lastSelectedChild = [self.children objectAtIndex:_lastSelectedIndex];
     
     if([lastSelectedChild respondsToSelector:@selector(setIsSelected:)])
@@ -499,6 +509,6 @@
         [_delegate itemsScroller:self didSelectItemIndex:(int)index];
 #endif
     }
-}*/}
+}
 
 @end

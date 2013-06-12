@@ -31,7 +31,7 @@
 #define displayChange 50
 #define redLevelScore 5000
 #define redLevelTime 30.0
-#define yellowLevelChance 20 // percent
+#define yellowLevelChance 100//20 //percent
 #define boxTag 3
 #define boxSelected 4
 #define cardNumber 5

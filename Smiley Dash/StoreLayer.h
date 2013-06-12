@@ -8,8 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
+#import "CCItemsScroller.h"
 
-@interface StoreLayer : CCLayer {
+@interface StoreLayer : CCLayer <CCItemsScrollerDelegate> {
+    
+    NSUserDefaults *prefs;
     
 }
 

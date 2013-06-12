@@ -63,6 +63,8 @@ int bouncerID;
 // this is so that when checking for circles, the program doesnt do any unnecessary loops
 int startParticle;
 
+
+// fix superhero effect
 // fix it so that when black zombie slow down they can speed back up
 
 // restart acts like a sort of constructor
@@ -182,13 +184,18 @@ int startParticle;
     
     // if iphone 5, change the display to use the larger image
     
+    NSString *string = [prefs stringForKey:@"background"];
+    NSString *retina = [string stringByAppendingString:@".png"];
+    NSString *fourInch = [string stringByAppendingString:@"-568h.png"];
+    
     if((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 568)) {
         
-        background = [CCSprite spriteWithFile:@"bg1-568h.png"];
+        background = [CCSprite spriteWithFile:fourInch];
+        
         
     } else {
         
-        background = [CCSprite spriteWithFile:@"bg1.png"];
+        background = [CCSprite spriteWithFile:retina];
         
     }
     
@@ -1510,13 +1517,18 @@ int startParticle;
     
     CCSprite *newbackground;
     
+    NSString *string = [prefs stringForKey:@"background"];
+    NSString *retina = [string stringByAppendingString:@".png"];
+    NSString *fourInch = [string stringByAppendingString:@"-568h.png"];
+    
     if((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 568)) {
         
-        newbackground = [CCSprite spriteWithFile:@"bg1-568h.png"];
+        newbackground = [CCSprite spriteWithFile:fourInch];
+        
         
     } else {
         
-        newbackground = [CCSprite spriteWithFile:@"bg1.png"];
+        newbackground = [CCSprite spriteWithFile:retina];
         
     }
     

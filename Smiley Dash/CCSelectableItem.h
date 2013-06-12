@@ -20,7 +20,6 @@
 
 @interface CCSelectableItem : CCLayerColor<CCSelectableItemDelegate>
 
-@property (readwrite, assign) int identifier;
 @property (assign, nonatomic) BOOL isSelected;
 @property (assign, nonatomic) ccColor4B normalColor;
 @property (assign, nonatomic) ccColor4B selectedColor;
