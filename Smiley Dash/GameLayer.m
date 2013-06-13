@@ -20,14 +20,13 @@ NSMutableArray * particleArray;
 NSMutableArray * hearts;
 NSMutableArray * spriteToDelete;
 
+CDSoundSource *sound;
+
 CCLabelTTF *scoreLabel;
 CCLabelTTF *waveLabel;
 
 CCSprite *pauseButton;
 CCSprite *pauseBackground;
-
-//ccColor3B oldColor;
-
 
 /// consider removing aswell as method
 CCSprite *ring;
@@ -63,6 +62,10 @@ int bouncerID;
 // this is so that when checking for circles, the program doesnt do any unnecessary loops
 int startParticle;
 
+//[[SimpleAudioEngine sharedEngine] playEffect:@"mysound.wav"];//play a sound
+//[[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"somemusic.mp3"];//play background music
+//[CDAudioManager sharedManager].backgroundMusic.volume = 0.25f;
+
 
 // fix superhero effect
 // fix it so that when black zombie slow down they can speed back up
@@ -93,9 +96,9 @@ int startParticle;
     spawn = 0;
     pauseButton = nil;
     pauseBackground = nil;
+    sound = nil;
     
-    
-} // finish this at the end
+}
 
 - (id) init:(int)resume {
     
@@ -128,6 +131,8 @@ int startParticle;
         
         // touch is enabled
         self.touchEnabled = YES;
+        
+        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"soundtrack.mp3"];
         
         time = 0;
         paused = false;
@@ -243,7 +248,6 @@ int startParticle;
     
     levelEnemyCount = startEnemies + (enemyAddition * (wave - 1));
     heroLife = startHeroLife;
-    
     startParticle = 0;
     yellowLevelActive = false;
     redLevelActive = false;
@@ -1134,6 +1138,10 @@ int startParticle;
                     
                     [self createSuperEffect];
                     
+                    sound = [[SimpleAudioEngine sharedEngine] soundSourceForFile:@"spinSound.mp3"];
+                    [sound play];
+                    sound.looping = YES;
+                    
                     break;
                 case 80 ... 99:
                     card = [CCSprite spriteWithFile:@"playCard.png"];
@@ -1149,10 +1157,7 @@ int startParticle;
             card.position = box.position;
             
             [self addChild:card z:3];
-            [gameObjects addObject:card];
-            
-            //[card runAction:[CCSequence actions: [CCDelayTime actionWithDuration:1.0], [CCFadeOut actionWithDuration:3.0], nil]];
-            
+            [gameObjects addObject:card];            
             break;
         }
     }
@@ -1180,6 +1185,12 @@ int startParticle;
 }
 
 - (void) yellowLevelCreate {
+    
+    if (sound != nil) {
+        
+        sound = nil;
+        
+    }
     
     CGSize size = [[CCDirector sharedDirector] winSize];
     
@@ -1298,7 +1309,7 @@ int startParticle;
                     
                     lifeLost = true;
                     
-                    [hero runAction:[CCSequence actions:[CCDelayTime actionWithDuration:0.7] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
+                    [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:0.7] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
                         
                         lifeLost = false;
                         
@@ -1337,7 +1348,7 @@ int startParticle;
                     
                     lifeLost = true;
                     
-                    [hero runAction:[CCSequence actions:[CCDelayTime actionWithDuration:retreatTime] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
+                    [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:retreatTime] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
                         
                         lifeLost = false;
                         [hero stopAllActions];
@@ -1694,16 +1705,20 @@ int startParticle;
         [self addChild:select z:3];
         
         
-        
         timePowerActive = true;
         timePowerStartTime = time;
         
         for (Enemy *enemy in enemies) {
+            
             if (enemy.tag == enemy_tag) {
+                
                 enemy.speed = enemy_slow;
+                
             }
+            
         }
         
+        [[SimpleAudioEngine sharedEngine] playEffect:@"timerSounds.mp3"];
         
     } else if (powerup.tag == starNumber && superActive == false) {
         
@@ -1736,6 +1751,10 @@ int startParticle;
 }
 
 - (void) activateSuperhero {
+    
+    sound = [[SimpleAudioEngine sharedEngine] soundSourceForFile:@"spinSound.mp3"];
+    [sound play];
+    sound.looping = NO;
     
     CGPoint heroPos = hero.position;
     
@@ -1799,6 +1818,12 @@ int startParticle;
 }
 
 - (void) deactivateSuperhero {
+    
+    if (sound != nil) {
+        
+        sound = nil;
+        
+    }
     
     CGPoint heroPos = hero.position;
     
@@ -1980,6 +2005,14 @@ int startParticle;
                 if (enemy.tag != frozenEnemy && circleCreated == true) {
                     
                     if (CGRectIntersectsRect(enemy.boundingBox, particle.boundingBox)) {
+                        
+                        for (CCSprite *effect in gameObjects) {
+                            
+                            if (effect.tag == actionEffect) {
+                                effect.opacity = 0;
+                            }
+                            
+                        }
                         
                         [self removeAllParticles];
                         powerup = nil;
