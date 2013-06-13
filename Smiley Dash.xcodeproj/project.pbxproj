@@ -325,9 +325,7 @@
 		DCEAA1051763DC970040C5CB /* CCSelectableItem.m in Sources */ = {isa = PBXBuildFile; fileRef = DCEAA1031763DC970040C5CB /* CCSelectableItem.m */; };
 		DCEEFFEC173AD7950008025A /* time-hd.png in Resources */ = {isa = PBXBuildFile; fileRef = DCEEFFEA173AD7950008025A /* time-hd.png */; };
 		DCEEFFED173AD7950008025A /* time.png in Resources */ = {isa = PBXBuildFile; fileRef = DCEEFFEB173AD7950008025A /* time.png */; };
-		DCF926881769078C00254057 /* soundtrack.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DCF9267E1769078C00254057 /* soundtrack.mp3 */; };
-		DCF926891769078C00254057 /* timerSounds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DCF9267F1769078C00254057 /* timerSounds.mp3 */; };
-		DCF9268B17692BD900254057 /* spinSound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DCF9268A17692BD900254057 /* spinSound.mp3 */; };
+		DCEEFFF0173AF54C0008025A /* soundtrack.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DCEEFFEF173AF54C0008025A /* soundtrack.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -851,9 +849,7 @@
 		DCEAA1031763DC970040C5CB /* CCSelectableItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSelectableItem.m; sourceTree = "<group>"; };
 		DCEEFFEA173AD7950008025A /* time-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "time-hd.png"; sourceTree = "<group>"; };
 		DCEEFFEB173AD7950008025A /* time.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = time.png; sourceTree = "<group>"; };
-		DCF9267E1769078C00254057 /* soundtrack.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = soundtrack.mp3; sourceTree = "<group>"; };
-		DCF9267F1769078C00254057 /* timerSounds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = timerSounds.mp3; sourceTree = "<group>"; };
-		DCF9268A17692BD900254057 /* spinSound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = spinSound.mp3; sourceTree = "<group>"; };
+		DCEEFFEF173AF54C0008025A /* soundtrack.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = soundtrack.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1181,11 +1177,11 @@
 		DC51B7041738512200B3993F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				DCF926711769078C00254057 /* Music and sounds */,
 				DC23C3F5175F4D310078FF1E /* Tutorial */,
 				DC9C4B1817429CB600C3F37C /* Buttons */,
 				DC9484D91740957F002176F1 /* Backgrounds */,
 				DC5AF046173EEDE500CD9668 /* Font */,
+				DCEEFFEE173AF54C0008025A /* Sounds */,
 				DC4ECF371738F4300059312F /* Objects */,
 				DCB7B3CB1738D6600041FAAC /* Characters */,
 				DC51B7051738512200B3993F /* Default.png */,
@@ -1709,14 +1705,12 @@
 			path = Characters;
 			sourceTree = "<group>";
 		};
-		DCF926711769078C00254057 /* Music and sounds */ = {
+		DCEEFFEE173AF54C0008025A /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
-				DCF9268A17692BD900254057 /* spinSound.mp3 */,
-				DCF9267E1769078C00254057 /* soundtrack.mp3 */,
-				DCF9267F1769078C00254057 /* timerSounds.mp3 */,
+				DCEEFFEF173AF54C0008025A /* soundtrack.mp3 */,
 			);
-			path = "Music and sounds";
+			path = Sounds;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1795,6 +1789,7 @@
 				DC0043E91739A55F00C52F33 /* particle.png in Resources */,
 				DCEEFFEC173AD7950008025A /* time-hd.png in Resources */,
 				DCEEFFED173AD7950008025A /* time.png in Resources */,
+				DCEEFFF0173AF54C0008025A /* soundtrack.mp3 in Resources */,
 				DC9FDF3C173C2D8000B4FADF /* star-hd.png in Resources */,
 				DC9FDF3D173C2D8000B4FADF /* star.png in Resources */,
 				DC9FDF40173C353D00B4FADF /* heart.png in Resources */,
@@ -1914,9 +1909,6 @@
 				DCA101C917667161004A2B82 /* b4.png in Resources */,
 				DCA101CC17668111004A2B82 /* dlbg4-hd.png in Resources */,
 				DCA101CD17668111004A2B82 /* dlbg4.png in Resources */,
-				DCF926881769078C00254057 /* soundtrack.mp3 in Resources */,
-				DCF926891769078C00254057 /* timerSounds.mp3 in Resources */,
-				DCF9268B17692BD900254057 /* spinSound.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

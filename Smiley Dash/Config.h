@@ -69,11 +69,11 @@
 
 //Powerups
 
-#define powerUpSpawn 1.0//10.0
+#define powerUpSpawn 10.0
 #define powerUpCount 2
 #define powerupScore 50
 
-#define timePowerActiveTime 10.0
+#define timePowerActiveTime 5.0
 #define coinScore 3000
 
 //waves
@@ -93,8 +93,8 @@
 
 // zombies
 
-#define startEnemies 1//10
-#define enemyAddition 0//10 //5
+#define startEnemies 10
+#define enemyAddition 5//10 //5
 
 #define enemyScore 1000
 #define enemy_tag 1
