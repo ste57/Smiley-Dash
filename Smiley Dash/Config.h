@@ -17,7 +17,7 @@
 
 #define startPlayPoints 1
 
-#define actionEffect 2
+#define actionEffect 10
 
 #define iphoneParticleLimit 200
 #define iphoneRetinaLimit 300
@@ -31,7 +31,7 @@
 #define displayChange 50
 #define redLevelScore 5000
 #define redLevelTime 30.0
-#define yellowLevelChance 100//20 //percent
+#define yellowLevelChance 20 //percent
 #define boxTag 3
 #define boxSelected 4
 #define cardNumber 5
@@ -62,14 +62,13 @@
 #define doublePoints 3
 #define nothingCard 4
 
-#define startMultiplier 1
 
 #define heroMaxLife 3
-
+#define ringEffect 22
 
 //Powerups
 
-#define powerUpSpawn 1.0//10.0
+#define powerUpSpawn 10.0
 #define powerUpCount 2
 #define powerupScore 50
 
@@ -93,13 +92,13 @@
 
 // zombies
 
-#define startEnemies 1//10
-#define enemyAddition 0//10 //5
+#define startEnemies 5//10
+#define enemyAddition 0//5
 
 #define enemyScore 1000
 #define enemy_tag 1
 #define enemy_speed 0.1//0.1
-#define enemy_maxSpeed 2.0//1.4//0.3 //1.8
+#define enemy_maxSpeed 0.2//2.0//1.4//0.3 //1.8
 
 #define enemy_slow 0.03
 

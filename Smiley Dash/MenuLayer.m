@@ -11,6 +11,7 @@
 #import "Config.h"
 #import "TutorialLayer.h"
 #import "StoreLayer.h"
+#import "SimpleAudioEngine.h"
 
 
 @implementation MenuLayer
@@ -33,6 +34,8 @@
     
 	if( (self=[super init])) {
         
+        [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
+        
         // ask director for the window size
 		CGSize size = [[CCDirector sharedDirector] winSize];
         prefs = [NSUserDefaults standardUserDefaults];
@@ -47,6 +50,18 @@
 
             NSString *backgroundString = @"bg1";
             [prefs setObject:backgroundString forKey:@"background"];
+            
+            [prefs setInteger:1 forKey:@"colour"];
+            
+            [prefs setInteger:1 forKey:@"multiplier"];
+            
+            [prefs setInteger:heroMaxLife forKey:@"life"];
+            
+            backgroundString = @"particleCircle.png";
+            [prefs setObject:backgroundString forKey:@"particle"];
+            
+            backgroundString = @"hero.png";
+            [prefs setObject:backgroundString forKey:@"smiley"];
             
         }
 
@@ -68,10 +83,10 @@
         [self addChild:background];
         
         
-        NSInteger playPoints = [prefs integerForKey:@"playPoints"];
+       // NSInteger playPoints = [prefs integerForKey:@"playPoints"];
         
         CCSprite *label;
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@" playPoints: %i", playPoints] fontName:@"Baccarat" fontSize:15];
+        /*label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@" playPoints: %i", playPoints] fontName:@"Baccarat" fontSize:15];
         label.position = ccp(size.width/4 * 3, size.height - 10);
         [self addChild:label z:4];
         
@@ -81,11 +96,18 @@
         label.position = ccp(size.width/2, size.height - 10);
         [self addChild:label z:4];
         
+        */
+        
+        CCSprite *scoreImage = [CCSprite spriteWithFile:@"highScore.png"];
+        scoreImage.position = ccp(size.width/8 - 40, size.height - 20);
+        [self addChild:scoreImage z:4];
         
         NSInteger highScore = [prefs integerForKey:@"highScore"];
 
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@" HighScore: %i", highScore] fontName:@"Baccarat" fontSize:15];
-        label.position = ccp(size.width/6, size.height - 10);
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%i", highScore] fontName:@"Baccarat" fontSize:15];
+        [label setAnchorPoint:ccp(1, 0)];
+        label.position = ccp(size.width/6.5, size.height - 30);
+        label.color = ccc3(132, 15, 5);
         [self addChild:label z:4];
         
         
@@ -100,12 +122,14 @@
         play.position = ccp(size.width/2, size.height/5 * 2);
         guide.position = ccp(size.width/2 - 75, (size.height/5));
         store.position = ccp(size.width/2 + 75, (size.height/5));
-        about.position = ccp(size.width/11, size.height/2);
+        about.position = ccp(size.width/12 * 11, size.height/9);
         
         CCMenu *menu = [CCMenu menuWithItems:play, guide, store, about, nil];
         menu.position = CGPointZero;
         
         [self addChild:menu];
+        
+        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"mainMenu.mp3"];
         
 	}
     
@@ -114,8 +138,8 @@
 }
 
 - (void) playTapped:(id)sender {
-    //[[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[GameLayer scene:game_restart]]];
-    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[TutorialLayer scene]]];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[GameLayer scene:game_restart]]];
+    //[[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[TutorialLayer scene]]];
 }
 
 - (void) guideTapped:(id)sender {
@@ -128,6 +152,12 @@
 
 - (void) aboutTapped:(id)sender {
     printf("yet to be done!");
+}
+
+- (void) dealloc {
+    
+    [super dealloc];
+    
 }
 
 @end

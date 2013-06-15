@@ -12,6 +12,10 @@
 #import "Enemy.h"
 #import "PowerEater.h"
 #import "GameOver.h"
+#import "MenuLayer.h"
+
+ALuint timerSound;
+ALuint superSound;
 
 NSMutableArray * enemies;
 NSMutableArray * powerups;
@@ -20,12 +24,18 @@ NSMutableArray * particleArray;
 NSMutableArray * hearts;
 NSMutableArray * spriteToDelete;
 
+NSString * mainSmiley;
+NSString * trail;
+
 CDSoundSource *sound;
+
+ccColor3B particleColor;
 
 CCLabelTTF *scoreLabel;
 CCLabelTTF *waveLabel;
 
 CCSprite *pauseButton;
+CCSprite *stopButton;
 CCSprite *pauseBackground;
 
 /// consider removing aswell as method
@@ -62,13 +72,7 @@ int bouncerID;
 // this is so that when checking for circles, the program doesnt do any unnecessary loops
 int startParticle;
 
-//[[SimpleAudioEngine sharedEngine] playEffect:@"mysound.wav"];//play a sound
-//[[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"somemusic.mp3"];//play background music
-//[CDAudioManager sharedManager].backgroundMusic.volume = 0.25f;
-
-
-// fix superhero effect
-// fix it so that when black zombie slow down they can speed back up
+int startMultiplier;
 
 // restart acts like a sort of constructor
 
@@ -96,8 +100,6 @@ int startParticle;
     spawn = 0;
     pauseButton = nil;
     pauseBackground = nil;
-    sound = nil;
-    
 }
 
 - (id) init:(int)resume {
@@ -120,6 +122,12 @@ int startParticle;
             
         }
         
+        startMultiplier = [prefs integerForKey:@"multiplier"];
+        
+        mainSmiley = [prefs stringForKey:@"smiley"];
+        
+        trail = [prefs stringForKey:@"particle"];
+        
         // initialise arrays
         [self allocateArrays];
         
@@ -133,6 +141,30 @@ int startParticle;
         self.touchEnabled = YES;
         
         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"soundtrack.mp3"];
+        
+        NSInteger colour = [prefs integerForKey:@"colour"];
+        
+        switch (colour) {
+            case 1:
+                particleColor = ccYELLOW;
+                break;
+            case 2:
+                particleColor = ccBLUE;
+                break;
+            case 3:
+                particleColor = ccGREEN;
+                break;
+            case 4:
+                particleColor = ccRED;
+                break;
+            case 5:
+                particleColor = ccWHITE;
+                break;
+                
+            default:
+                particleColor = ccYELLOW;
+                break;
+        }
         
         time = 0;
         paused = false;
@@ -220,6 +252,16 @@ int startParticle;
         
     }
     
+    CCMenuItem *pauseButton = [CCMenuItemImage itemWithNormalImage:@"pauseOff.png" selectedImage:@"pauseOn.png" target:self selector:@selector(pause:)];
+    
+    pauseButton.position = ccp(winSize.width/50 * 49, winSize.height/35);
+    
+    CCMenu *menu = [CCMenu menuWithItems:pauseButton, nil];
+    menu.position = CGPointZero;
+    
+    [self addChild:menu z:5];
+
+    
     background.rotation = 90;
     // place background in the center of the screen
     background.position = ccp(winSize.width/2, winSize.height/2);
@@ -228,7 +270,7 @@ int startParticle;
     [self addChild: background];
     
     // hero sprite
-    hero = [CCSprite spriteWithFile:@"hero.png"];
+    hero = [CCSprite spriteWithFile:mainSmiley];
     hero.position = ccp(winSize.width/2,winSize.height/2);
     hero.tag = heroTag;
     
@@ -247,7 +289,9 @@ int startParticle;
     [self addChild:scoreLabel z:4];
     
     levelEnemyCount = startEnemies + (enemyAddition * (wave - 1));
-    heroLife = startHeroLife;
+    
+    heroLife = [prefs integerForKey:@"life"];
+    
     startParticle = 0;
     yellowLevelActive = false;
     redLevelActive = false;
@@ -265,6 +309,8 @@ int startParticle;
     lifeLost = false;
     
     ring  = nil;
+    
+    sound = [[[SimpleAudioEngine sharedEngine] soundSourceForFile:@"spinSound.mp3"] retain];
     
 }
 
@@ -489,14 +535,16 @@ int startParticle;
         
         [hearts removeAllObjects];
         
+        float heartScale = 0.65;
         
         for (int life = 0; life < heroLife; life++) {
             
             CGSize winSize = [CCDirector sharedDirector].winSize;
             
-            heart = [CCSprite spriteWithFile:@"life.png"];
-            double width = (winSize.width - ((heart.contentSize.width + 5) * life) - 10);
-            heart.position = ccp(width,winSize.height - heart.contentSize.height);
+            heart = [CCSprite spriteWithFile:mainSmiley];
+            heart.scale = heartScale;
+            double width = (winSize.width - (((heart.contentSize.width * heartScale) + 5) * life) - 10);
+            heart.position = ccp(width,winSize.height - (heart.contentSize.height * heartScale));
             
             [hearts addObject:heart];
             [self addChild:heart z:4];
@@ -517,7 +565,7 @@ int startParticle;
         labelScore -= displayChange;
     }
     
-    if (multiplier > startMultiplier) {
+    if (multiplier > 1) {
         
         [scoreLabel setString:[NSString stringWithFormat:@"%07d  x%i", labelScore, multiplier]];
         scoreLabel.position = ccp(44, winSize.height - 10);
@@ -543,13 +591,13 @@ int startParticle;
     switch (circles) {
             
         case 0:
-            color = ccc3(255,255,255);
+            color = ccc3(233,233,233);
             break;
         case 1:
-            color = ccc3(238, 122, 233);
+            color = ccc3(255, 187, 255);
             break;
         case 2:
-            color = ccc3(28, 134, 238);
+            color = ccc3(72, 118, 255);
             break;
         case 3:
             color = ccc3(202, 225, 255);
@@ -564,7 +612,7 @@ int startParticle;
             color = ccc3(255, 128, 0);
             break;
         case 7:
-            color = ccc3(230, 0, 0);
+            color = ccc3(230, 20, 20);
             break;
         default:
             color = ccc3(0, 0, 0);
@@ -604,7 +652,7 @@ int startParticle;
                         
                         CCSprite * particle = [particleArray objectAtIndex:a];
                         
-                        [particle setTexture:[[CCTextureCache sharedTextureCache] addImage:@"particleCircle.png"]];
+                        [particle setTexture:[[CCTextureCache sharedTextureCache] addImage:trail]];
                         
                         particle.color = color;
                         
@@ -711,7 +759,8 @@ int startParticle;
     if (lengthIntersect >= distanceBetweenParticles && lengthIntersect < distanceBetweenParticles*2) {
         
         CCSprite *particle;
-        particle = [CCSprite spriteWithFile:@"particle.png"];
+        particle = [CCSprite spriteWithFile:trail];
+        particle.color = particleColor;
         particle.position = touchLocation;
         [particleArray addObject:particle];
         [self addChild:particle];
@@ -731,13 +780,15 @@ int startParticle;
             diffy += firstParticle.position.y;
             
             CCSprite *particle;
-            particle = [CCSprite spriteWithFile:@"particle.png"];
+            particle = [CCSprite spriteWithFile:trail];
+            particle.color = particleColor;
             particle.position = ccp(diffx,diffy);
             [particleArray addObject:particle];
             [self addChild:particle];
         }
         
-        particle = [CCSprite spriteWithFile:@"particle.png"];
+        particle = [CCSprite spriteWithFile:trail];
+        particle.color = particleColor;
         particle.position = touchLocation;
         [particleArray addObject:particle];
         [self addChild:particle];
@@ -757,7 +808,8 @@ int startParticle;
             diffy += firstParticle.position.y;
             
             CCSprite *particle;
-            particle = [CCSprite spriteWithFile:@"particle.png"];
+            particle = [CCSprite spriteWithFile:trail];
+            particle.color = particleColor;
             particle.position = ccp(diffx,diffy);
             [particleArray addObject:particle];
             [self addChild:particle];
@@ -768,13 +820,15 @@ int startParticle;
             diffx += firstParticle.position.x;
             diffy += firstParticle.position.y;
             
-            particle = [CCSprite spriteWithFile:@"particle.png"];
+            particle = [CCSprite spriteWithFile:trail];
+            particle.color = particleColor;
             particle.position = ccp(diffx,diffy);
             [particleArray addObject:particle];
             [self addChild:particle];
         }
         
-        particle = [CCSprite spriteWithFile:@"particle.png"];
+        particle = [CCSprite spriteWithFile:trail];
+        particle.color = particleColor;
         particle.position = touchLocation;
         [particleArray addObject:particle];
         [self addChild:particle];
@@ -794,7 +848,8 @@ int startParticle;
             diffy += firstParticle.position.y;
             
             CCSprite *particle;
-            particle = [CCSprite spriteWithFile:@"particle.png"];
+            particle = [CCSprite spriteWithFile:trail];
+            particle.color = particleColor;
             particle.position = ccp(diffx,diffy);
             [particleArray addObject:particle];
             [self addChild:particle];
@@ -805,13 +860,15 @@ int startParticle;
             diffx += firstParticle.position.x;
             diffy += firstParticle.position.y;
             
-            particle = [CCSprite spriteWithFile:@"particle.png"];
+            particle = [CCSprite spriteWithFile:trail];
+            particle.color = particleColor;
             particle.position = ccp(diffx,diffy);
             [particleArray addObject:particle];
             [self addChild:particle];
         }
         
-        particle = [CCSprite spriteWithFile:@"particle.png"];
+        particle = [CCSprite spriteWithFile:trail];
+        particle.color = particleColor;
         particle.position = touchLocation;
         [particleArray addObject:particle];
         [self addChild:particle];
@@ -821,9 +878,14 @@ int startParticle;
 
 - (void) ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     
+    if (superActive == true) {
+        
+        [hero runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:superHeroSpeed angle:720*superHeroSpeed]]];
+        
+    }
+    
     if (circleCreated == true && paused == false) {
         
-        CCSprite * select;
         int enemy_Score = 0;
         
         for (CCSprite *effect in gameObjects) {
@@ -840,23 +902,41 @@ int startParticle;
                 
                 enemy_Score += enemyScore;
                 
-                select = [CCSprite spriteWithFile:@"enemyEffect.png"];
-                
-                [select runAction:[CCScaleTo actionWithDuration: 0.7 scale:1.5]];
-                
-                CCFadeOut *fade = [CCFadeOut actionWithDuration:0.2];
-                [select runAction:[CCSequence actions:fade, [CCCallBlockN actionWithBlock:^(CCNode *node) {
-                    [self addToDeletionPile:select];
+                [enemy runAction:[CCSequence actions:[CCScaleTo actionWithDuration:0.2 scale:0.1] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
+                    
+                    [self addToDeletionPile:enemy];
                     
                 }], nil]];
                 
-                select.position = enemy.position;
-                select.tag = actionEffect;
+                CCParticleSystem *emitter;
                 
-                [gameObjects addObject:select];
-                [self addChild:select z:4];
+                emitter = [[CCParticleExplosion alloc] initWithTotalParticles:30];
+
+                emitter.tangentialAccel = 30;
                 
-                [self addToDeletionPile:enemy];
+                ccColor4F startColor = ccc4FFromccc3B(ccYELLOW);
+                emitter.startColor = startColor;
+                
+                ccColor4F endColor = {255, 255, 255, 0};
+                emitter.endColor = endColor;
+
+                emitter.speed = 0.3;
+                
+                emitter.position = enemy.position;
+                
+                emitter.scale = 0.6;
+                
+                emitter.texture = [[CCTextureCache sharedTextureCache] addImage:@"particleCircle.png"];
+                
+                emitter.life = 0.8f;
+                
+                emitter.lifeVar = 0;
+                
+                [self addChild:emitter];
+                
+                emitter.autoRemoveOnFinish = YES;
+
+                
             }
         }
         
@@ -895,8 +975,6 @@ int startParticle;
         circlesDrawn = 0;
         
     }
-    
-    //[background runAction:[CCTintTo actionWithDuration:1.0 red:oldColor.r green:oldColor.g blue:oldColor.b]];
     
     [self deleteFromDeletionPile];
     
@@ -942,8 +1020,6 @@ int startParticle;
 
 - (void) ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
-    CGSize winSize = [[CCDirector sharedDirector] winSize];
-    
     // touch only moved when touch moved
     touchMoved = NO;
     
@@ -953,36 +1029,32 @@ int startParticle;
     touchLocation = [touch locationInView:[touch view]];
     touchLocation = [[CCDirector sharedDirector] convertToGL:touchLocation];
     
-    
-    if (touchLocation.y > (winSize.height/10 * 9) && yellowLevelActive != true) {
-        
-        [self pause];
-    }
-    
     if (paused == true && pauseButton != nil) {
         
         if (CGRectContainsPoint(pauseButton.boundingBox, touchLocation)) {
+            
+            if (superActive == true ) {
+                
+                [sound play];
+                
+            }
+
+            [[CCDirector sharedDirector] resume];
+            [[CCDirector sharedDirector] startAnimation];
+            
+            [[SimpleAudioEngine sharedEngine] resumeBackgroundMusic];
             
             paused = false;
             
             [self removeChild:pauseBackground];
             [self removeChild:pauseButton];
-
-            if (redLevelActive == true) {
-                [self schedule:@selector(createBouncers:) interval:bouncerInterval];
-                [self schedule:@selector(updateBouncers:)];
-                [self schedule:@selector(stopRedLevel:) interval: redLevelTime];
-                
-                
-                [self schedule:@selector(accelerateEnemies:) interval:accelerateEnemyInterval];
-                [self schedule:@selector(update:)];
-            } else {
-                
-                [self scheduleMethods];
-                
-            }
+            [self removeChild:stopButton];
             
             
+        } else if (CGRectContainsPoint(stopButton.boundingBox, touchLocation)) {
+            [[CCDirector sharedDirector] resume];
+            [[CCDirector sharedDirector] startAnimation];
+            [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[MenuLayer scene]]];
         }
     }
     
@@ -1005,20 +1077,16 @@ int startParticle;
         if (lengthIntersect <= hero.contentSize.width + 50) {
             
             touchMoved = YES;
-            particle = [CCSprite spriteWithFile:@"particle.png"];
+            particle = [CCSprite spriteWithFile:trail];
+            particle.color = particleColor;
             
         } else {
             
             particle = [CCSprite spriteWithFile:@"touch.png"];
+            particle.color = particleColor;
             
             [particle runAction:[CCScaleTo actionWithDuration: 0.8 scaleX:2.5 scaleY:2.5]];
             [particle runAction:[CCFadeOut actionWithDuration:0.8]];
-            
-            //nice animations... interesting
-            //[particle runAction:[CCFlipX3D actionWithDuration:3.0]];
-            //[particle runAction:[CCEaseElasticOut actionWithAction:[CCFadeOut actionWithDuration:3.0] period:1.0]];
-            //[particle runAction:[CCFadeOut actionWithDuration:1.0]];
-            
         }
         
         // stop any movements made by the hero
@@ -1027,7 +1095,7 @@ int startParticle;
         [particleArray addObject:particle];
         [self addChild:particle];
         
-    } else if (yellowLevelActive == true && paused == false) {
+    } else if (yellowLevelActive == true) {
         
         for (CCSprite *box in gameObjects) {
             
@@ -1041,20 +1109,15 @@ int startParticle;
                     
                     box.opacity = 0;
                     
-                    //[box runAction:[CCFadeOut actionWithDuration:0.1]];
-                    
-                    CCDelayTime *delay = [CCDelayTime actionWithDuration:5.0];
+                    CCDelayTime *delay = [CCDelayTime actionWithDuration:3.0];
                     CCCallFuncN *remove = [CCCallFuncN actionWithTarget:self selector:@selector(fadeAllOut)];
-                    CCSequence *seq = [CCSequence actions:delay, remove, nil];
+                    CCCallFuncN *stop = [CCCallFuncN actionWithTarget:self selector:@selector(stopYellowLevel)];
+                    CCSequence *seq = [CCSequence actions:delay, remove, stop, nil];
                     [self runAction:seq];
                     
                     [self placeCard];
                     
                     yellowLevelActive = false;
-                    
-                    CCDelayTime *timeDelay = [CCDelayTime actionWithDuration:5.0];
-                    CCCallFuncN *stop = [CCCallFuncN actionWithTarget:self selector:@selector(stopYellowLevel)];
-                    [self runAction:[CCSequence actions:timeDelay, stop, nil]];
                     
                     break;
                 }
@@ -1065,9 +1128,13 @@ int startParticle;
     
 }
 
-- (void) pause {
+- (void) pause:(id)sender {
     
     if (paused != true) {
+        
+        [sound stop];
+        [[SimpleAudioEngine sharedEngine] stopEffect:timerSound];
+        [[SimpleAudioEngine sharedEngine] stopEffect:superSound];
         
         paused = true;
     
@@ -1085,13 +1152,25 @@ int startParticle;
     
         pauseBackground.position = ccp(winSize.width/2, winSize.height/2);
         [self addChild:pauseBackground z:5];
-            
-        [self unscheduleAllSelectors];
-        [self schedule:@selector(increaseTime:) interval:1.0];
         
         pauseButton = [CCSprite spriteWithFile:@"playOff.png"];
         pauseButton.position = ccp(winSize.width/2, winSize.height/2);
         [self addChild:pauseButton z:6];
+        
+        stopButton = [CCSprite spriteWithFile:@"stopOff.png"];
+        stopButton.scale = 0.5;
+        stopButton.position = ccp(winSize.width/15, winSize.height/15);
+        [self addChild:stopButton z:6];
+        
+        
+        [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:0.01] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
+            
+            [[CCDirector sharedDirector] stopAnimation];
+            [[CCDirector sharedDirector] pause];
+            
+        }], nil]];
+        
+        [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
         
     }
     
@@ -1138,9 +1217,12 @@ int startParticle;
                     
                     [self createSuperEffect];
                     
-                    sound = [[SimpleAudioEngine sharedEngine] soundSourceForFile:@"spinSound.mp3"];
+                    //superSound = [[SimpleAudioEngine sharedEngine] playEffect:@"spinSound.mp3"];
+                    [[SimpleAudioEngine sharedEngine]setBackgroundMusicVolume:0.5f];
+                    
                     [sound play];
                     sound.looping = YES;
+                    
                     
                     break;
                 case 80 ... 99:
@@ -1148,7 +1230,7 @@ int startParticle;
                     card.tag = playCard;
                     
                     NSInteger playPoints = [prefs integerForKey:@"playPoints"];
-                    [prefs setInteger:(playPoints+1) forKey:@"playPoints"];
+                    [prefs setInteger:(playPoints+3) forKey:@"playPoints"];
                     break;
                 default:
                     break;
@@ -1168,12 +1250,13 @@ int startParticle;
     
     for (CCSprite *box in gameObjects) {
         
-       // if (box.tag == boxTag) {
+        if (box.tag != ringEffect) {
             
             [box stopAllActions];
-            [box runAction:[CCFadeOut actionWithDuration:1.0]];
+            box.opacity = 0;
+            //[box runAction:[CCFadeOut actionWithDuration:1.0]];
             
-        //}
+        }
     }
 }
 
@@ -1185,12 +1268,6 @@ int startParticle;
 }
 
 - (void) yellowLevelCreate {
-    
-    if (sound != nil) {
-        
-        sound = nil;
-        
-    }
     
     CGSize size = [[CCDirector sharedDirector] winSize];
     
@@ -1367,6 +1444,14 @@ int startParticle;
                     [self unschedule:@selector(createBouncers:)];
                     [self unScheduleMethods];
                     
+                    NSInteger highScore = [prefs integerForKey:@"highScore"];
+                    
+                    if (score > highScore) {
+                        [prefs setInteger:score forKey:@"highScore"];
+                    }
+                    
+                    [prefs setInteger:(highScore + score) forKey:@"totalScore"];
+                    
                     [bouncer runAction:[CCMoveTo actionWithDuration:1.0 position:hero.position]];
                     
                     [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:3.0 scene: [GameOver scene]]];
@@ -1470,6 +1555,10 @@ int startParticle;
 }
 
 - (void) redLevelCreate {
+    
+    for (CCSprite *power in powerups) {
+        [self addToDeletionPile:power];
+    }
     
     if (wave < 10) {
         levelEnemyCount = level1bouncers;
@@ -1643,15 +1732,15 @@ int startParticle;
                 powerup = [CCSprite spriteWithFile:@"time.png"];
                 powerup.tag = timeNumber;
                 break;
-            case 30 ... 84:
+            case 30 ... 59:
                 powerup = [CCSprite spriteWithFile:@"star.png"];
                 powerup.tag = starNumber;
                 break;
-            case 85 ... 89:
+            case 60 ... 79:
                 powerup = [CCSprite spriteWithFile:@"heart.png"];
                 powerup.tag = heartNumber;
                 break;
-            case 90 ... 99:
+            case 80 ... 99:
                 powerup = [CCSprite spriteWithFile:@"coin.png"];
                 powerup.tag = coinNumber;
                 break;
@@ -1718,9 +1807,11 @@ int startParticle;
             
         }
         
-        [[SimpleAudioEngine sharedEngine] playEffect:@"timerSounds.mp3"];
+        timerSound = [[SimpleAudioEngine sharedEngine] playEffect:@"timerSounds.mp3"];
         
     } else if (powerup.tag == starNumber && superActive == false) {
+        
+        superSound = [[SimpleAudioEngine sharedEngine] playEffect:@"spinSound.mp3"];
         
         lifeLost = false;
         [hero stopAllActions];
@@ -1730,7 +1821,9 @@ int startParticle;
         
     } else if (powerup.tag == heartNumber) {
         
-        if (heroLife < heroMaxLife) {
+        int maxLife = [prefs integerForKey:@"life"];
+        
+        if (heroLife < maxLife) {
             
             heroLife += 1;
             
@@ -1752,9 +1845,7 @@ int startParticle;
 
 - (void) activateSuperhero {
     
-    sound = [[SimpleAudioEngine sharedEngine] soundSourceForFile:@"spinSound.mp3"];
-    [sound play];
-    sound.looping = NO;
+    [[SimpleAudioEngine sharedEngine]setBackgroundMusicVolume:0.5f];
     
     CGPoint heroPos = hero.position;
     
@@ -1777,7 +1868,7 @@ int startParticle;
     superHeroStartTime = time;
     superHeroActive = true;
     
-    [self createSuperEffect];
+   [self createSuperEffect];
     
 }
 
@@ -1791,6 +1882,8 @@ int startParticle;
             
             ring.position = hero.position;
             
+            ring.tag = ringEffect;
+
             [gameObjects addObject:ring];
             [self addChild:ring z:2];
             
@@ -1799,6 +1892,7 @@ int startParticle;
             [ring stopAllActions];
             ring.opacity = 255;
             ring.scale = 1.0;
+            ring.position = hero.position;
         }
         
         [ring runAction:[CCSequence actions:[CCFadeOut actionWithDuration:0.7] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
@@ -1808,7 +1902,7 @@ int startParticle;
         [ring runAction:[CCScaleTo actionWithDuration: 0.7 scale:0.8]];
         
         
-    } else if (superHeroActive == false) {
+    } else if ((time - superHeroStartTime) > superHeroTime && superActive == false) {
         
         [self addToDeletionPile:ring];
         [self deleteFromDeletionPile];
@@ -1819,11 +1913,9 @@ int startParticle;
 
 - (void) deactivateSuperhero {
     
-    if (sound != nil) {
-        
-        sound = nil;
-        
-    }
+    [sound stop];
+    
+    [[SimpleAudioEngine sharedEngine]setBackgroundMusicVolume:1.0f];
     
     CGPoint heroPos = hero.position;
     
@@ -1831,7 +1923,7 @@ int startParticle;
     
     [self removeChild:hero cleanup:YES];
     
-    hero = [CCSprite spriteWithFile:@"hero.png"];
+    hero = [CCSprite spriteWithFile:mainSmiley];
     hero.position = heroPos;
     hero.tag = heroTag;
     
@@ -2045,7 +2137,12 @@ int startParticle;
             if (CGRectIntersectsRect(enemy.boundingBox, hero.boundingBox)) {
                 
                 // add enemy to deletion
-                [self addToDeletionPile:enemy];
+                [enemy runAction:[CCSequence actions:[CCScaleTo actionWithDuration:0.2 scale:0.1] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
+                    
+                    [self addToDeletionPile:enemy];
+                    
+                }], nil]];
+
                 score += (enemyScore * multiplier);
                 
             }
@@ -2068,23 +2165,6 @@ int startParticle;
                         [superEnemies addObject:enemy];
                         
                         [self addToDeletionPile:enemy];
-                        
-                    } else if (powerup.tag == coinNumber) {
-                        
-                        score -= coinScore;
-                        
-                        if (score < 0) {
-                            score = 0;
-                        }
-                        
-                    } else if (powerup.tag == heartNumber) {
-                        
-                        heroLife--;
-                        
-                    } else if (powerup.tag == timeNumber) {
-                        
-                        heroSpeed /= 2;
-                        [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(resetHeroSpeed) userInfo:nil repeats:NO];
                         
                     }
                 }
@@ -2231,6 +2311,7 @@ int startParticle;
             doublePointsActive = false;
             superActive = false;
             multiplier = startMultiplier;
+            superHeroStartTime = time;
             
         }
         
