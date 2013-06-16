@@ -56,9 +56,13 @@
 	<true/>
 	<key>UIAppFonts</key>
 	<array>
+		<string>Cartoon Bold.ttf</string>
+		<string>Rogue Hero Outline.ttf</string>
+		<string>Nonstop.ttf</string>
+		<string>Larabiefont Bold.ttf</string>
+		<string>Institution Regular.ttf</string>
 		<string>ElGar.ttf</string>
 		<string>Collegiate-Normal.ttf</string>
-		<string>Cartoon Bold.ttf</string>
 		<string>Baccarat Regular.ttf</string>
 	</array>
 	<key>UIPrerenderedIcon</key>

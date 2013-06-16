@@ -27,6 +27,8 @@ NSMutableArray * spriteToDelete;
 NSString * mainSmiley;
 NSString * trail;
 
+ccColor3B oldColor;
+
 CDSoundSource *sound;
 
 ccColor3B particleColor;
@@ -42,6 +44,8 @@ CCSprite *pauseBackground;
 CCSprite *ring;
 
 int spawn;
+
+int tintLevel;
 
 bool doublePointsActive;
 bool superActive;
@@ -67,7 +71,7 @@ int previousYellowLevel;
 int chosenRedLevel;
 double heroSpeed;
 int order;
-int bouncerSpeedLevel;
+float bouncerSpeedLevel;
 int bouncerID;
 // this is so that when checking for circles, the program doesnt do any unnecessary loops
 int startParticle;
@@ -117,8 +121,8 @@ int startMultiplier;
         } else if (resume == game_resume) {
             
             // so extra points do not get added
-            NSInteger systemScore = [prefs integerForKey:@"totalScore"];
-            [prefs setInteger:(systemScore - score) forKey:@"totalScore"];
+            NSInteger systemScore = [prefs doubleForKey:@"totalScore"];
+            [prefs setDouble:(systemScore - score) forKey:@"totalScore"];
             
         }
         
@@ -169,6 +173,7 @@ int startMultiplier;
         time = 0;
         paused = false;
         [self schedule:@selector(increaseTime:) interval:1.0];
+        [self tintScreen];
         
 	}
 	return self;
@@ -236,7 +241,7 @@ int startMultiplier;
         
     }
     
-    //oldColor = background.color;
+    oldColor = background.color;
     
     if((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 568)) {
         
@@ -283,7 +288,8 @@ int startMultiplier;
     
     // score label
     scoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%07d", labelScore] fontName:@"Baccarat" fontSize:15];
-    scoreLabel.position = ccp(34, winSize.height - 10);
+    [scoreLabel setAnchorPoint:ccp(0, 0)];
+    scoreLabel.position = ccp(8, winSize.height - 20);
     // change the colour to yelllow
     scoreLabel.color = ccc3(255, 255, 0);
     [self addChild:scoreLabel z:4];
@@ -311,6 +317,8 @@ int startMultiplier;
     ring  = nil;
     
     sound = [[[SimpleAudioEngine sharedEngine] soundSourceForFile:@"spinSound.mp3"] retain];
+    
+    tintLevel = wave;
     
 }
 
@@ -554,8 +562,6 @@ int startMultiplier;
 
 - (void) displayScore {
     
-    CGSize winSize = [[CCDirector sharedDirector] winSize];
-    
     if (score > labelScore) {
         
         labelScore += displayChange;
@@ -568,12 +574,10 @@ int startMultiplier;
     if (multiplier > 1) {
         
         [scoreLabel setString:[NSString stringWithFormat:@"%07d  x%i", labelScore, multiplier]];
-        scoreLabel.position = ccp(44, winSize.height - 10);
         
     } else {
         
         [scoreLabel setString:[NSString stringWithFormat:@"%07d", labelScore]];
-        scoreLabel.position = ccp(34, winSize.height - 10);
     }
     
 }
@@ -591,7 +595,7 @@ int startMultiplier;
     switch (circles) {
             
         case 0:
-            color = ccc3(233,233,233);
+            color = ccc3(210,210,210);
             break;
         case 1:
             color = ccc3(255, 187, 255);
@@ -718,7 +722,7 @@ int startMultiplier;
                         // [self changeColour:circlesDrawn];
                         if (circlesDrawn > 1) {
                             
-                            CCLabelTTF *pointsLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"x%01d", circlesDrawn] fontName:@"Cartoon" fontSize:15];
+                            CCLabelTTF *pointsLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"x%01d", circlesDrawn] fontName:@"Nonstop" fontSize:15];
                             
                             
                             pointsLabel.position = ccp(((maxX - minX)/2) + minX, ((maxY - minY)/2) + minY);
@@ -947,11 +951,16 @@ int startMultiplier;
             
             CCLabelTTF *pointsLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%d", enemy_Score] fontName:@"Baccarat" fontSize:18];
             
-            pointsLabel.position = scoreLabel.position;
+            pointsLabel.position = ccp(scoreLabel.position.x + 10, scoreLabel.position.y - 30);
+            
+            [pointsLabel setAnchorPoint:ccp(0, 0)];
+            
             // change the colour to yelllow
-            pointsLabel.color = ccc3(0, 0, 0);
+            pointsLabel.color = ccWHITE;
             
             [pointsLabel runAction:[CCScaleTo actionWithDuration:1.0 scale:2.0]];
+            
+            [pointsLabel runAction:[CCMoveTo actionWithDuration:0.5 position:scoreLabel.position]];
             
             [pointsLabel runAction:[CCSequence actions:[CCFadeOut actionWithDuration:0.7] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
                 
@@ -1054,6 +1063,14 @@ int startMultiplier;
         } else if (CGRectContainsPoint(stopButton.boundingBox, touchLocation)) {
             [[CCDirector sharedDirector] resume];
             [[CCDirector sharedDirector] startAnimation];
+            NSInteger highScore = [prefs doubleForKey:@"highScore"];
+            NSInteger totalScore = [prefs doubleForKey:@"totalScore"];
+            
+            if (score > highScore) {
+                [prefs setDouble:score forKey:@"highScore"];
+            }
+            
+            [prefs setDouble:(totalScore + score) forKey:@"totalScore"];
             [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[MenuLayer scene]]];
         }
     }
@@ -1074,7 +1091,7 @@ int startMultiplier;
         CCSprite *particle;
         
         // if touch is anywhere in the radius of the sprite plus around it then set touch to be moved and allow player to move it
-        if (lengthIntersect <= hero.contentSize.width + 50) {
+        if (lengthIntersect <= hero.contentSize.width + 70) {
             
             touchMoved = YES;
             particle = [CCSprite spriteWithFile:trail];
@@ -1444,13 +1461,14 @@ int startMultiplier;
                     [self unschedule:@selector(createBouncers:)];
                     [self unScheduleMethods];
                     
-                    NSInteger highScore = [prefs integerForKey:@"highScore"];
+                    NSInteger highScore = [prefs doubleForKey:@"highScore"];
+                    NSInteger totalScore = [prefs doubleForKey:@"totalScore"];
                     
                     if (score > highScore) {
-                        [prefs setInteger:score forKey:@"highScore"];
+                        [prefs setDouble:score forKey:@"highScore"];
                     }
                     
-                    [prefs setInteger:(highScore + score) forKey:@"totalScore"];
+                    [prefs setDouble:(totalScore + score) forKey:@"totalScore"];
                     
                     [bouncer runAction:[CCMoveTo actionWithDuration:1.0 position:hero.position]];
                     
@@ -2076,6 +2094,62 @@ int startMultiplier;
     
 }
 
+- (void) tintScreen {
+    
+    switch (tintLevel) {
+        case 1:
+            break;
+        case 2:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:220 green:220 blue:220]];
+            break;
+        case 3:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:210 green:180 blue:180]];
+            break;
+        case 4:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:180 green:210 blue:180]];
+            break;
+        case 5:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:180 green:180 blue:210]];
+            break;
+        case 6:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:210 green:140 blue:140]];
+            break;
+        case 7:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:140 green:210 blue:140]];
+            break;
+        case 8:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:140 green:140 blue:210]];
+            break;
+        case 9:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:210 green:100 blue:100]];
+            break;
+        case 10:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:100 green:210 blue:100]];
+            break;
+        case 11:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:100 green:100 blue:210]];
+            break;
+        case 12:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:210 green:60 blue:60]];
+            break;
+        case 13:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:60 green:210 blue:60]];
+            break;
+        case 14:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:60 green:60 blue:210]];
+            break;
+        case 15:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:150 green:150 blue:150]];
+            break;
+        default:
+            [background runAction:[CCTintTo actionWithDuration:3.0 red:150 green:150 blue:150]];
+            break;
+    }
+    
+        tintLevel ++;
+    
+}
+
 - (void) enemyUpdate {
     
     NSMutableArray *superEnemies = [[NSMutableArray alloc] init];
@@ -2101,6 +2175,7 @@ int startMultiplier;
                         for (CCSprite *effect in gameObjects) {
                             
                             if (effect.tag == actionEffect) {
+                                [self removeChild:effect];
                                 effect.opacity = 0;
                             }
                             
@@ -2218,9 +2293,6 @@ int startMultiplier;
                     
                     heroLife--;
                     
-                    // [hero runAction:[CCEaseElasticOut actionWithAction:[CCFadeIn actionWithDuration:10.0] period:0.4]];
-                    //[hero runAction:[cc]]
-                    //[hero runAction:[CCEaseBounceInOut actionWithDuration:4.0]];
                     CCFadeTo *fadeIn = [CCFadeTo actionWithDuration:0.5 opacity:50];
                     CCFadeTo *fadeOut = [CCFadeTo actionWithDuration:0.5 opacity:255];
                     
@@ -2252,13 +2324,14 @@ int startMultiplier;
                     
                     [enemy runAction:[CCMoveTo actionWithDuration:1.0 position:hero.position]];
                     
-                    NSInteger highScore = [prefs integerForKey:@"highScore"];
+                    NSInteger highScore = [prefs doubleForKey:@"highScore"];
+                    NSInteger totalScore = [prefs doubleForKey:@"totalScore"];
                     
                     if (score > highScore) {
-                        [prefs setInteger:score forKey:@"highScore"];
+                        [prefs setDouble:score forKey:@"highScore"];
                     }
                     
-                    [prefs setInteger:(highScore + score) forKey:@"totalScore"];
+                    [prefs setDouble:(totalScore + score) forKey:@"totalScore"];
                     
                     [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:3.0 scene: [GameOver scene]]];
                 }
@@ -2286,9 +2359,9 @@ int startMultiplier;
         
         if (lengthIntersect < distanceBetweenParticles) {
             
-            if (heroSpeed < heroStartSpeed*2) {
+            if (heroSpeed < heroStartSpeed*3) {
                 
-                heroSpeed += 0.1;
+                heroSpeed += 0.2;
             }
             
         }
@@ -2311,7 +2384,7 @@ int startMultiplier;
             doublePointsActive = false;
             superActive = false;
             multiplier = startMultiplier;
-            superHeroStartTime = time;
+            //superHeroStartTime = time;
             
         }
         
@@ -2354,6 +2427,7 @@ int startMultiplier;
         
         wave++;
         currentEnemyCount = 0;
+        
         
         levelEnemyCount = startEnemies + (enemyAddition * (wave - 1));
         
@@ -2399,7 +2473,7 @@ int startMultiplier;
             chosenRedLevel += redLevelChange;
         }
         
-        if (wave != chosenRedLevel && (wave - previousYellowLevel) > redLevelSpace && (arc4random() % (100/yellowLevelChance)) ==  0) {
+        if (wave != chosenRedLevel && (wave - previousYellowLevel) > yellowLevelSpace && (arc4random() % (100/yellowLevelChance)) ==  0) {
             
             //YELLOW LEVEL!!!
             /**********************************************************************************************/
@@ -2453,6 +2527,12 @@ int startMultiplier;
                 [self firstBackground];
                 
             }
+            
+        }
+        
+        if (redLevelActive != true && yellowLevelActive != true) {
+            
+            [self tintScreen];
             
         }
         

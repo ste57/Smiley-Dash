@@ -12,6 +12,7 @@
 #import "TutorialLayer.h"
 #import "StoreLayer.h"
 #import "SimpleAudioEngine.h"
+#import "AboutLayer.h"
 
 
 @implementation MenuLayer
@@ -42,10 +43,9 @@
         
         CCSprite *background;
         
-        if (![prefs objectForKey:@"firstRun"]) {
+        if (![prefs integerForKey:@"firstRun"]) {
             // add this for when tutorial is being done
             
-            [prefs setObject:[NSDate date] forKey:@"firstRun"];
             [prefs setInteger:startPlayPoints forKey:@"playPoints"];
 
             NSString *backgroundString = @"bg1";
@@ -62,6 +62,10 @@
             
             backgroundString = @"hero.png";
             [prefs setObject:backgroundString forKey:@"smiley"];
+            
+            [prefs setInteger:250000000 forKey:@"totalScore"];
+            
+            [prefs setInteger:1 forKey:@"firstRun"];
             
         }
 
@@ -82,31 +86,17 @@
         
         [self addChild:background];
         
-        
-       // NSInteger playPoints = [prefs integerForKey:@"playPoints"];
-        
         CCSprite *label;
-        /*label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@" playPoints: %i", playPoints] fontName:@"Baccarat" fontSize:15];
-        label.position = ccp(size.width/4 * 3, size.height - 10);
-        [self addChild:label z:4];
-        
-        NSInteger totalPoints = [prefs integerForKey:@"totalScore"];
-        
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@" total: %i", totalPoints] fontName:@"Baccarat" fontSize:15];
-        label.position = ccp(size.width/2, size.height - 10);
-        [self addChild:label z:4];
-        
-        */
         
         CCSprite *scoreImage = [CCSprite spriteWithFile:@"highScore.png"];
         scoreImage.position = ccp(size.width/8 - 40, size.height - 20);
         [self addChild:scoreImage z:4];
         
-        NSInteger highScore = [prefs integerForKey:@"highScore"];
+        NSInteger highScore = [prefs doubleForKey:@"highScore"];
 
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%i", highScore] fontName:@"Baccarat" fontSize:15];
-        [label setAnchorPoint:ccp(1, 0)];
-        label.position = ccp(size.width/6.5, size.height - 30);
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%i", highScore] fontName:@"Larabiefont" fontSize:17];
+        [label setAnchorPoint:ccp(0, 0)];
+        label.position = ccp(size.width/15 + 5, size.height - 30);
         label.color = ccc3(132, 15, 5);
         [self addChild:label z:4];
         
@@ -129,7 +119,11 @@
         
         [self addChild:menu];
         
-        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"mainMenu.mp3"];
+        if (![[SimpleAudioEngine sharedEngine] isBackgroundMusicPlaying]) {
+        
+            [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"mainMenu.mp3"];
+            
+        }
         
 	}
     
@@ -138,8 +132,18 @@
 }
 
 - (void) playTapped:(id)sender {
-    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[GameLayer scene:game_restart]]];
-    //[[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[TutorialLayer scene]]];
+    
+    if (![prefs integerForKey:@"firstPlayRun"]) {
+        
+        [prefs setInteger:1 forKey:@"firstPlayRun"];
+        
+        [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[TutorialLayer scene]]];
+    } else {
+        
+        [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[GameLayer scene:game_restart]]];
+        
+    }
+
 }
 
 - (void) guideTapped:(id)sender {
@@ -151,7 +155,7 @@
 }
 
 - (void) aboutTapped:(id)sender {
-    printf("yet to be done!");
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[AboutLayer scene]]];
 }
 
 - (void) dealloc {

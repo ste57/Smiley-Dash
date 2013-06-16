@@ -40,7 +40,7 @@ CCLabelTTF *pointsLabel;
         
         NSInteger playPoints = [prefs integerForKey:@"playPoints"];
         
-        pointsLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%i", playPoints] fontName:@"Collegiate-Normal" fontSize:23];
+        pointsLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%i", playPoints] fontName:@"Institution" fontSize:20];
         
         CCLabelTTF *rewindlabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Restart"] fontName:@"ElGar" fontSize:23];
         
@@ -56,10 +56,10 @@ CCLabelTTF *pointsLabel;
         playlabel.color = ccc3(200, 200, 200);
         stoplabel.color = ccc3(200, 200, 200);
         
-        pointsLabel.position = ccp(size.width/2,(size.height * 1/5));
-        pointsLabel.color = ccc3(255, 255, 255);
+        pointsLabel.position = ccp(size.width/2-8,size.height/2);
+        pointsLabel.color = ccBLACK;
         
-        [self addChild:pointsLabel];
+        [self addChild:pointsLabel z:5];
         [self addChild:rewindlabel];
         [self addChild:playlabel];
         [self addChild:stoplabel];
