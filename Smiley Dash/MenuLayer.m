@@ -66,6 +66,8 @@
             
             [prefs setInteger:1 forKey:@"firstRun"];
             
+            [prefs setInteger:0 forKey:@"maxWave"];
+            
         }
 
         
@@ -99,12 +101,37 @@
         NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:highScore]];
         
         [formatter release];
-
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@", formatted] fontName:@"Larabiefont" fontSize:17];
-        [label setAnchorPoint:ccp(0, 0)];
-        label.position = ccp(size.width/15 + 5, size.height - 30);
-        label.color = ccc3(132, 15, 5);
-        [self addChild:label z:4];
+        
+        if (highScore == 0) {
+        
+            label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@ (highscore) :  %i (wave)", formatted, [prefs integerForKey:@"maxWave"]] fontName:@"Larabiefont" fontSize:17];
+            [label setAnchorPoint:ccp(0, 0)];
+            if((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 568)) {
+                
+                label.position = ccp(size.width/15 + 10, size.height - 30);
+                
+            } else {
+                
+                label.position = ccp(size.width/15 + 5, size.height - 30);
+            }
+            label.color = ccc3(132, 15, 5);
+            [self addChild:label z:4];
+            
+        } else {
+            
+            label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@ : %i", formatted, [prefs integerForKey:@"maxWave"]] fontName:@"Larabiefont" fontSize:17];
+            [label setAnchorPoint:ccp(0, 0)];
+            if((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 568)) {
+                
+                label.position = ccp(size.width/15 + 10, size.height - 30);
+                
+            } else {
+                
+                label.position = ccp(size.width/15 + 5, size.height - 30);
+            }
+            label.color = ccc3(132, 15, 5);
+            [self addChild:label z:4];
+        }
         
         
         CCMenuItem *play = [CCMenuItemImage itemWithNormalImage:@"MenuPlay.png" selectedImage:@"MenuPlayOn.png" target:self selector:@selector(playTapped:)];

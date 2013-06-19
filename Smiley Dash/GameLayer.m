@@ -155,13 +155,15 @@ int startMultiplier;
                 particleColor = ccYELLOW;
                 break;
             case 2:
-                particleColor = ccBLUE;
+                //blue
+                particleColor = ccc3(51,89,232);
                 break;
             case 3:
                 particleColor = ccGREEN;
                 break;
             case 4:
-                particleColor = ccRED;
+                //red
+                particleColor = ccc3(253,42,32);
                 break;
             case 5:
                 particleColor = ccWHITE;
@@ -303,7 +305,7 @@ int startMultiplier;
     // score label
     scoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%07d", labelScore] fontName:@"Baccarat" fontSize:15];
     [scoreLabel setAnchorPoint:ccp(0, 0)];
-    scoreLabel.position = ccp(8, winSize.height - 20);
+    scoreLabel.position = ccp(8, winSize.height - 18);
     // change the colour to yelllow
     scoreLabel.color = ccc3(255, 255, 0);
     [self addChild:scoreLabel z:4];
@@ -451,13 +453,13 @@ int startMultiplier;
             
             // increase speed of enemy as wave increases
             
-            if (wave < 5) {
+            if (wave < 8) {
                 
-                speed = (wave * ((enemy_maxSpeed - enemy_speed)/5)) + enemy_speed;
+                speed = (wave * ((enemy_maxSpeed - enemy_speed)/8)) + enemy_speed;
                 
             } else {
                 
-                speed = (4 * ((enemy_maxSpeed - enemy_speed)/5) + enemy_speed);
+                speed = (7 * ((enemy_maxSpeed - enemy_speed)/8) + enemy_speed);
                 
             }
             
@@ -1084,6 +1086,12 @@ int startMultiplier;
             NSInteger highScore = [prefs doubleForKey:@"highScore"];
             NSInteger totalScore = [prefs doubleForKey:@"totalScore"];
             
+            if (wave > [prefs integerForKey:@"maxWave"]) {
+                
+                [prefs setInteger:wave forKey:@"maxWave"];
+                
+            }
+            
             if (score > highScore) {
                 [prefs setDouble:score forKey:@"highScore"];
             }
@@ -1114,11 +1122,17 @@ int startMultiplier;
             touchMoved = YES;
             particle = [CCSprite spriteWithFile:trail];
             particle.color = particleColor;
+            if (superHeroActive == false) {
+                heroSpeed = heroStartSpeed;
+            }
             
         } else {
             
             particle = [CCSprite spriteWithFile:@"touch.png"];
             particle.color = particleColor;
+            if (superHeroActive == false) {
+                heroSpeed = heroStartSpeed * 1.5;
+            }
             
             [particle runAction:[CCScaleTo actionWithDuration: 0.8 scaleX:2.5 scaleY:2.5]];
             [particle runAction:[CCFadeOut actionWithDuration:0.8]];
@@ -1221,9 +1235,18 @@ int startMultiplier;
         if (box.tag == boxSelected) {
             
             switch(arc4random() % 100) {
-                case 0 ... 39:
+                case 0 ... 32:
                     card = [CCSprite spriteWithFile:@"nothing.png"];
                     card.tag = nothingCard;
+                    break;
+                    
+                case 33 ... 39:
+                    
+                    card = [CCSprite spriteWithFile:@"playCard.png"];
+                    card.tag = playCard;
+                    
+                    playPoints = [prefs integerForKey:@"playPoints"];
+                    [prefs setInteger:(playPoints+3) forKey:@"playPoints"];
                     break;
                 case 40 ... 59:
                     card = [CCSprite spriteWithFile:@"doublePoints.png"];
@@ -1262,16 +1285,8 @@ int startMultiplier;
                     
                     
                     break;
-                case 80 ... 86:
                     
-                    card = [CCSprite spriteWithFile:@"playCard.png"];
-                    card.tag = playCard;
-                    
-                    playPoints = [prefs integerForKey:@"playPoints"];
-                    [prefs setInteger:(playPoints+3) forKey:@"playPoints"];
-                    break;
-                    
-                case 87 ... 99:
+                case 80 ... 99:
                     
                     card = [CCSprite spriteWithFile:@"playPoint.png"];
                     card.tag = playCard;
@@ -1500,6 +1515,12 @@ int startMultiplier;
                     NSInteger highScore = [prefs doubleForKey:@"highScore"];
                     NSInteger totalScore = [prefs doubleForKey:@"totalScore"];
                     
+                    if (wave > [prefs integerForKey:@"maxWave"]) {
+                        
+                        [prefs setInteger:wave forKey:@"maxWave"];
+                        
+                    }
+                    
                     if (score > highScore) {
                         [prefs setDouble:score forKey:@"highScore"];
                     }
@@ -1668,7 +1689,9 @@ int startMultiplier;
         
     }
     
-    score += (redLevelScore * multiplier);
+    score += ((redLevelScore * multiplier) * ((wave /10.00) + 1));
+    
+    printf("%f", ((redLevelScore * multiplier) * ((wave /10.00) + 1)));
     
     [self unScheduleMethods];
     [self scheduleMethods];
@@ -1795,33 +1818,34 @@ int startMultiplier;
         CCSprite * powerup = nil;
         
         switch(arc4random() % 100) {
-                /*case 0 ... 29:
-                 powerup = [CCSprite spriteWithFile:@"time.png"];
-                 powerup.tag = timeNumber;
-                 break;
-                 case 30 ... 49:
-                 powerup = [CCSprite spriteWithFile:@"star.png"];
-                 powerup.tag = starNumber;
-                 break;
-                 case 50 ... 59:
-                 powerup = [CCSprite spriteWithFile:@"heart.png"];
-                 powerup.tag = heartNumber;
-                 break;
-                 case 60 ... 69:
-                 powerup = [CCSprite spriteWithFile:@"coin.png"];
-                 powerup.tag = coinNumber;
-                 break;
-                 case 70 ... 84:
-                 powerup = [CCSprite spriteWithFile:@"helper.png"];
-                 powerup.tag = helperNumber;
-                 break;
-                 case 85 ... 99:*/
-            case 0 ... 99:
-                powerup = [CCSprite spriteWithFile:@"helper.png"];
-                powerup.tag = helperNumber;
-                /* powerup = [CCSprite spriteWithFile:@"nuke.png"];
-                 powerup.tag = nukeNumber;
-                 break;*/
+            case 0 ... 24:
+                powerup = [CCSprite spriteWithFile:@"time.png"];
+                powerup.tag = timeNumber;
+                break;
+            case 25 ... 49:
+                powerup = [CCSprite spriteWithFile:@"star.png"];
+                powerup.tag = starNumber;
+                break;
+            case 50 ... 64:
+                powerup = [CCSprite spriteWithFile:@"heart.png"];
+                powerup.tag = heartNumber;
+                break;
+            case 65 ... 79:
+                powerup = [CCSprite spriteWithFile:@"coin.png"];
+                powerup.tag = coinNumber;
+                break;
+            case 80 ... 92:
+                if ([prefs integerForKey:@"unlockhelper"]) {
+                    powerup = [CCSprite spriteWithFile:@"helper.png"];
+                    powerup.tag = helperNumber;
+                }
+                break;
+            case 93 ... 99:
+                if ([prefs integerForKey:@"unlocknuke"]) {
+                    powerup = [CCSprite spriteWithFile:@"nuke.png"];
+                    powerup.tag = nukeNumber;
+                }
+                break;
             default:
                 break;
         }
@@ -1848,6 +1872,11 @@ int startMultiplier;
             [self addChild:powerup];
             [powerups addObject:powerup];
             [powerup runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:3.0 angle:180]]];
+            
+        } else {
+            
+            [self powerup:0.1];
+            
         }
     }
     
@@ -1935,7 +1964,9 @@ int startMultiplier;
         lifeLost = true;
         
         CCShaky3D *shake = [CCShaky3D actionWithDuration:3.0 size:CGSizeMake(2, 2) range:5 shakeZ:NO];
-        [self runAction:[CCSequence actions:shake, [CCStopGrid action],[CCCallBlockN actionWithBlock:^(CCNode *node) {
+        [self runAction:[CCSequence actions:shake, [CCStopGrid action], nil]];
+        
+        [self runAction:[CCSequence actions:[CCDelayTime actionWithDuration:6.0], [CCCallBlockN actionWithBlock:^(CCNode *node) {
             lifeLost = false;
         }], nil]];
         
@@ -2434,6 +2465,12 @@ int startMultiplier;
                     
                     NSInteger highScore = [prefs doubleForKey:@"highScore"];
                     NSInteger totalScore = [prefs doubleForKey:@"totalScore"];
+                    
+                    if (wave > [prefs integerForKey:@"maxWave"]) {
+                        
+                        [prefs setInteger:wave forKey:@"maxWave"];
+                        
+                    }
                     
                     if (score > highScore) {
                         [prefs setDouble:score forKey:@"highScore"];

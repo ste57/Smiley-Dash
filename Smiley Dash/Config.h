@@ -24,13 +24,13 @@
 // HELPER
 
 #define helperTime 20
-#define helperSpeed 1.4
+#define helperSpeed 2
 
 // ENEMIES
 
 #define startEnemies 10
 #define enemyAddition 5
-#define enemyScore 500//1000
+#define enemyScore 500
 #define accelerateEnemyInterval 1.0
 
 #define enemy_speed 0.1
@@ -41,12 +41,12 @@
 #define enemy_killTime 60
 
 #define enemy_acceleration 0.2
-#define enemy_spawnTime 0.50
+#define enemy_spawnTime 0.6
 
 // POWER EATERS
 
 #define PE_Score 1000
-#define PE_speed 1.2
+#define PE_speed 1.3
 
 // SUPER ZOMBIE
 
@@ -86,7 +86,7 @@
 // YELLOW LEVEL
 
 #define yellowLevelSpace 1
-#define yellowLevelChance 20//percent
+#define yellowLevelChance 22//percent
 
 // SYSTEM
 

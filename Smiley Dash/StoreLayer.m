@@ -16,6 +16,7 @@ CCLabelTTF *pricep1, *pricep2, *pricep3, *pricep4;
 CCLabelTTF *pricepart1, *pricepart2, *pricepart3;
 CCLabelTTF *prices1, *prices2, *prices3;
 CCLabelTTF *pricelife, *pricemult;
+CCLabelTTF *pricehelp, *pricenuke;
 CCItemsScroller *itemScroll;
 int screenFactor;
 NSMutableArray * array;
@@ -56,7 +57,7 @@ NSMutableArray * array;
             
             background = [CCSprite spriteWithFile:@"store-568h.png"];
             screenFactor = 105;
-            priceMove = 100;
+            priceMove = 90;
             
         } else {
             
@@ -70,8 +71,11 @@ NSMutableArray * array;
         
         CCLabelTTF *label;
         
-        CCSprite *scoreImage = [CCSprite spriteWithFile:@"particleStar.png"];
-        scoreImage.scale = 2.2;
+        ccColor3B labelColor = ccYELLOW;
+        NSString *labelstyle = @"Collegiate-Normal";
+        int labelFontSize = 14;
+        
+        CCSprite *scoreImage = [CCSprite spriteWithFile:@"scoreSprite.png"];
         scoreImage.color = ccYELLOW;
         scoreImage.position = ccp(size.width/2 - 50, size.height - 20);
         [self addChild:scoreImage z:4];
@@ -135,15 +139,17 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockbg1"]) {
         
-            pricebg1 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricebg1.color = ccYELLOW;
+            pricebg1 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricebg1.color = labelColor;
             pricebg1.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricebg1 z:2];
         
         }
         
+        
         button.position = ccp(layer.contentSize.width/2, layer.contentSize.height/2);
         label.position = ccp(layer.contentSize.width/2, layer.contentSize.height/2);
+        
         
         [layer addChild:button];
         [layer addChild:label];
@@ -161,8 +167,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockbg2"]) {
             
-            pricebg2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricebg2.color = ccYELLOW;
+            pricebg2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricebg2.color = labelColor;
             pricebg2.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricebg2 z:2];
             
@@ -189,8 +195,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockbg3"]) {
             
-            pricebg3 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricebg3.color = ccYELLOW;
+            pricebg3 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricebg3.color = labelColor;
             pricebg3.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricebg3 z:2];
             
@@ -213,8 +219,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockbg4"]) {
             
-            pricebg4 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricebg4.color = ccYELLOW;
+            pricebg4 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricebg4.color = labelColor;
             pricebg4.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricebg4 z:2];
             
@@ -252,8 +258,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockp1"]) {
             
-            pricep1 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"800,000"] fontName:@"Larabiefont" fontSize:18];
-            pricep1.color = ccYELLOW;
+            pricep1 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"800,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricep1.color = labelColor;
             pricep1.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricep1 z:2];
             
@@ -276,8 +282,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockp2"]) {
             
-            pricep2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"800,000"] fontName:@"Larabiefont" fontSize:18];
-            pricep2.color = ccYELLOW;
+            pricep2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"800,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricep2.color = labelColor;
             pricep2.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricep2 z:2];
             
@@ -300,8 +306,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockp3"]) {
             
-            pricep3 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"800,000"] fontName:@"Larabiefont" fontSize:18];
-            pricep3.color = ccYELLOW;
+            pricep3 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"800,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricep3.color = labelColor;
             pricep3.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricep3 z:2];
             
@@ -324,8 +330,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockp4"]) {
             
-            pricep4 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricep4.color = ccYELLOW;
+            pricep4 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricep4.color = labelColor;
             pricep4.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricep4 z:2];
             
@@ -348,28 +354,28 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockmultiplier"]) {
             
-            pricemult = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"3,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricemult.color = ccYELLOW;
+            pricemult = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"3,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricemult.color = labelColor;
             pricemult.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricemult z:2];
             
         } else if ([prefs integerForKey:@"unlockmultiplier"] == 1) {
             
-            pricemult = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"6,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricemult.color = ccYELLOW;
+            pricemult = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"6,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricemult.color = labelColor;
             pricemult.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricemult z:2];
             
         } else if ([prefs integerForKey:@"unlockmultiplier"] == 2) {
             
-            pricemult = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"10,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricemult.color = ccYELLOW;
+            pricemult = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"10,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricemult.color = labelColor;
             pricemult.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricemult z:2];
             
         } else {
             
-            pricemult = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"MAX"] fontName:@"Larabiefont" fontSize:40];
+            pricemult = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"MAX"] fontName:labelstyle fontSize:40];
             pricemult.color = ccBLACK;
             pricemult.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricemult z:2];
@@ -393,48 +399,48 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockmaxhealth"]) {
             
-            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"2,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricelife.color = ccYELLOW;
+            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"2,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricelife.color = labelColor;
             pricelife.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricelife z:2];
             
         } else if ([prefs integerForKey:@"unlockmaxhealth"] == 1) {
             
-            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"4,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricelife.color = ccYELLOW;
+            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"4,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricelife.color = labelColor;
             pricelife.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricelife z:2];
             
         } else if ([prefs integerForKey:@"unlockmaxhealth"] == 2) {
             
-            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"6,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricelife.color = ccYELLOW;
+            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"6,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricelife.color = labelColor;
             pricelife.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricelife z:2];
             
         } else if ([prefs integerForKey:@"unlockmaxhealth"] == 3) {
             
-            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"8,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricelife.color = ccYELLOW;
+            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"8,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricelife.color = labelColor;
             pricelife.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricelife z:2];
             
         } else if ([prefs integerForKey:@"unlockmaxhealth"] == 4) {
             
-            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"10,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricelife.color = ccYELLOW;
+            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"10,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricelife.color = labelColor;
             pricelife.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricelife z:2];
             
         } else if ([prefs integerForKey:@"unlockmaxhealth"] == 5) {
             
-            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"12,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricelife.color = ccYELLOW;
+            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"12,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricelife.color = labelColor;
             pricelife.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricelife z:2];
 
         } else {
-            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"MAX"] fontName:@"Larabiefont" fontSize:40];
+            pricelife = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"MAX"] fontName:labelstyle fontSize:40];
             pricelife.color = ccBLACK;
             pricelife.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricelife z:2];
@@ -473,8 +479,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockpart1"]) {
             
-            pricepart1 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"800,000"] fontName:@"Larabiefont" fontSize:18];
-            pricepart1.color = ccYELLOW;
+            pricepart1 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"800,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricepart1.color = labelColor;
             pricepart1.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricepart1 z:2];
             
@@ -497,8 +503,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockpart2"]) {
             
-            pricepart2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"800,000"] fontName:@"Larabiefont" fontSize:18];
-            pricepart2.color = ccYELLOW;
+            pricepart2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"800,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricepart2.color = labelColor;
             pricepart2.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricepart2 z:2];
             
@@ -521,8 +527,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlockpart3"]) {
             
-            pricepart3 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:@"Larabiefont" fontSize:18];
-            pricepart3.color = ccYELLOW;
+            pricepart3 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"1,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricepart3.color = labelColor;
             pricepart3.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:pricepart3 z:2];
             
@@ -560,8 +566,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlocksmiley1"]) {
             
-            prices1 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"2,500,000"] fontName:@"Larabiefont" fontSize:18];
-            prices1.color = ccYELLOW;
+            prices1 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"2,500,000"] fontName:labelstyle fontSize:labelFontSize];
+            prices1.color = labelColor;
             prices1.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:prices1 z:2];
             
@@ -584,8 +590,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlocksmiley2"]) {
             
-            prices2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"2,500,000"] fontName:@"Larabiefont" fontSize:18];
-            prices2.color = ccYELLOW;
+            prices2 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"2,500,000"] fontName:labelstyle fontSize:labelFontSize];
+            prices2.color = labelColor;
             prices2.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:prices2 z:2];
             
@@ -608,8 +614,8 @@ NSMutableArray * array;
         
         if (![prefs integerForKey:@"unlocksmiley3"]) {
             
-            prices3 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"3,000,000"] fontName:@"Larabiefont" fontSize:18];
-            prices3.color = ccYELLOW;
+            prices3 = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"3,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            prices3.color = labelColor;
             prices3.position = ccp(priceMove , layer.contentSize.height/2);
             [layer addChild:prices3 z:2];
             
@@ -619,6 +625,68 @@ NSMutableArray * array;
         [layer addChild:label];
         
         [array addObject:layer];
+        
+        // HELPER POWERUP
+        
+        layer = [[CCSelectableItem alloc] initWithNormalColor:ccc4(160,65,13,0) andSelectectedColor:ccc4(91, 93, 92, 180) andWidth:size.width-screenFactor andHeight:80];
+        
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Helper Power-up"] fontName:@"Collegiate-Normal" fontSize:15];
+        button = [CCSprite spriteWithFile:@"helperbutton.png"];
+        
+        button.position = ccp(layer.contentSize.width/2, layer.contentSize.height/2);
+        label.position = ccp(layer.contentSize.width/2, layer.contentSize.height/2);
+        
+        if (![prefs integerForKey:@"unlockhelper"]) {
+            
+            pricehelp = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"5,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricehelp.color = labelColor;
+            pricehelp.position = ccp(priceMove , layer.contentSize.height/2);
+            [layer addChild:pricehelp z:2];
+            
+        } else {
+            
+            pricenuke = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"UNLOCKED"] fontName:labelstyle fontSize:labelFontSize];
+            pricenuke.color = labelColor;
+            pricenuke.position = ccp(priceMove , layer.contentSize.height/2);
+            [layer addChild:pricenuke z:2];
+        }
+
+        
+        [layer addChild:button];
+        [layer addChild:label];
+        
+        [array addObject:layer];
+        
+        // NUKE POWERUP
+        
+        layer = [[CCSelectableItem alloc] initWithNormalColor:ccc4(160,65,13,0) andSelectectedColor:ccc4(91, 93, 92, 180) andWidth:size.width-screenFactor andHeight:80];
+        
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Nuke Power-up"] fontName:@"Collegiate-Normal" fontSize:15];
+        button = [CCSprite spriteWithFile:@"nukebutton.png"];
+        
+        button.position = ccp(layer.contentSize.width/2, layer.contentSize.height/2);
+        label.position = ccp(layer.contentSize.width/2, layer.contentSize.height/2);
+        
+        if (![prefs integerForKey:@"unlocknuke"]) {
+            
+            pricenuke = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"6,000,000"] fontName:labelstyle fontSize:labelFontSize];
+            pricenuke.color = labelColor;
+            pricenuke.position = ccp(priceMove , layer.contentSize.height/2);
+            [layer addChild:pricenuke z:2];
+            
+        } else {
+            
+            pricenuke = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"UNLOCKED"] fontName:labelstyle fontSize:labelFontSize];
+            pricenuke.color = labelColor;
+            pricenuke.position = ccp(priceMove , layer.contentSize.height/2);
+            [layer addChild:pricenuke z:2];
+        }
+        
+        [layer addChild:button];
+        [layer addChild:label];
+        
+        [array addObject:layer];
+
         
         itemScroll = [CCItemsScroller itemsScrollerWithItems:array andOrientation:CCItemsScrollerVertical andRect:CGRectMake(screenFactor, 0, size.width - screenFactor*2, size.height/10 * 8.7)];
         
@@ -674,7 +742,14 @@ NSMutableArray * array;
                 backgroundString = @"b1";
                 [prefs setObject:backgroundString forKey:@"background"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             break;
@@ -693,7 +768,14 @@ NSMutableArray * array;
                 backgroundString = @"b2";
                 [prefs setObject:backgroundString forKey:@"background"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             break;
@@ -712,7 +794,14 @@ NSMutableArray * array;
                 backgroundString = @"b3";
                 [prefs setObject:backgroundString forKey:@"background"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             break;
@@ -732,7 +821,14 @@ NSMutableArray * array;
                 backgroundString = @"b4";
                 [prefs setObject:backgroundString forKey:@"background"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             break;
@@ -753,7 +849,14 @@ NSMutableArray * array;
                 
                 [prefs setInteger:2 forKey:@"colour"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             
@@ -772,7 +875,14 @@ NSMutableArray * array;
                 
                 [prefs setInteger:3 forKey:@"colour"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             
@@ -791,7 +901,14 @@ NSMutableArray * array;
                 
                 [prefs setInteger:4 forKey:@"colour"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             
@@ -810,7 +927,14 @@ NSMutableArray * array;
                 
                 [prefs setInteger:5 forKey:@"colour"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             
@@ -827,7 +951,14 @@ NSMutableArray * array;
                 number = [prefs integerForKey:@"multiplier"];
                 [prefs setInteger:(number + 1) forKey:@"multiplier"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             } else if ([prefs integerForKey:@"unlockmultiplier"] == 1 && highScore >= 6000000) {
                 
@@ -839,7 +970,14 @@ NSMutableArray * array;
                 number = [prefs integerForKey:@"multiplier"];
                 [prefs setInteger:(number + 1) forKey:@"multiplier"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             } else if ([prefs integerForKey:@"unlockmultiplier"] == 2 && highScore >= 10000000) {
                 
@@ -853,7 +991,14 @@ NSMutableArray * array;
                 number = [prefs integerForKey:@"multiplier"];
                 [prefs setInteger:(number + 1) forKey:@"multiplier"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
             }
             
             break;
@@ -869,7 +1014,14 @@ NSMutableArray * array;
                 number = [prefs integerForKey:@"life"];
                 [prefs setInteger:(number + 1) forKey:@"life"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             } else if ([prefs integerForKey:@"unlockmaxhealth"] == 1 && highScore >= 4000000) {
                 
@@ -881,7 +1033,14 @@ NSMutableArray * array;
                 number = [prefs integerForKey:@"life"];
                 [prefs setInteger:(number + 1) forKey:@"life"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             } else if ([prefs integerForKey:@"unlockmaxhealth"] == 2 && highScore >= 6000000) {
                 
@@ -893,7 +1052,14 @@ NSMutableArray * array;
                 number = [prefs integerForKey:@"life"];
                 [prefs setInteger:(number + 1) forKey:@"life"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             } else if ([prefs integerForKey:@"unlockmaxhealth"] == 3 && highScore >= 8000000) {
                 
@@ -905,7 +1071,14 @@ NSMutableArray * array;
                 number = [prefs integerForKey:@"life"];
                 [prefs setInteger:(number + 1) forKey:@"life"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             } else if ([prefs integerForKey:@"unlockmaxhealth"] == 4 && highScore >= 10000000) {
                 
@@ -917,7 +1090,14 @@ NSMutableArray * array;
                 number = [prefs integerForKey:@"life"];
                 [prefs setInteger:(number + 1) forKey:@"life"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             } else if ([prefs integerForKey:@"unlockmaxhealth"] == 5 && highScore >= 12000000) {
                 
@@ -931,7 +1111,14 @@ NSMutableArray * array;
                 number = [prefs integerForKey:@"life"];
                 [prefs setInteger:(number + 1) forKey:@"life"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
             }
 
             break;
@@ -954,7 +1141,14 @@ NSMutableArray * array;
                 backgroundString = @"particleDiamond.png";
                 [prefs setObject:backgroundString forKey:@"particle"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             break;
@@ -973,7 +1167,14 @@ NSMutableArray * array;
                 backgroundString = @"particleSquare.png";
                 [prefs setObject:backgroundString forKey:@"particle"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             break;
@@ -992,7 +1193,14 @@ NSMutableArray * array;
                 backgroundString = @"particleStar.png";
                 [prefs setObject:backgroundString forKey:@"particle"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             break;
@@ -1015,7 +1223,14 @@ NSMutableArray * array;
                 backgroundString = @"pink.png";
                 [prefs setObject:backgroundString forKey:@"smiley"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             break;
@@ -1033,7 +1248,14 @@ NSMutableArray * array;
                 backgroundString = @"yellow.png";
                 [prefs setObject:backgroundString forKey:@"smiley"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             break;
@@ -1052,10 +1274,62 @@ NSMutableArray * array;
                 backgroundString = @"black.png";
                 [prefs setObject:backgroundString forKey:@"smiley"];
                 
-                [scoreLabel setString:[NSString stringWithFormat:@"%i", [prefs integerForKey:@"totalScore"]]];
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
                 
             }
             break;
+        case 20:
+            if (![prefs integerForKey:@"unlockhelper"] && highScore >= 5000000) {
+                
+                [prefs setDouble:(highScore - 5000000) forKey:@"totalScore"];
+                [prefs setInteger:1 forKey:@"unlockhelper"];
+                [pricehelp setString:[NSString stringWithFormat:@"UNLOCKED"]];
+                
+            }
+            
+            if ([prefs integerForKey:@"unlockhelper"]) {
+                
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
+                
+            }
+            break;
+        case 21:
+            if (![prefs integerForKey:@"unlocknuke"] && highScore >= 6000000) {
+                
+                [prefs setDouble:(highScore - 6000000) forKey:@"totalScore"];
+                [prefs setInteger:1 forKey:@"unlocknuke"];
+                [pricenuke setString:[NSString stringWithFormat:@"UNLOCKED"]];
+                
+            }
+            
+            if ([prefs integerForKey:@"unlocknuke"]) {
+                
+                NSNumberFormatter *formatter = [NSNumberFormatter new];
+                [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+                
+                NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[prefs integerForKey:@"totalScore"]]];
+                
+                [formatter release];
+                
+                [scoreLabel setString:[NSString stringWithFormat:@"%@", formatted]];
+                
+            }
+            break;
+
         default:
             break;
             
