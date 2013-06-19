@@ -21,6 +21,10 @@
 #define game_restart 0
 #define game_resume 1
 
+// HELPER
+
+#define helperTime 20
+#define helperSpeed 1.4
 
 // ENEMIES
 

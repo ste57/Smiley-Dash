@@ -206,6 +206,18 @@ int startMultiplier;
     
     previousTouch = touchLocation;
     
+    if (gameObjects.count != 0) {
+        
+        for (Enemy *helper in gameObjects) {
+            
+            if (helper.tag == helperNumber) {
+                
+                helper.time++;
+                
+            }
+        }
+    }
+    
 }
 
 - (void) allocateArrays {
@@ -267,7 +279,7 @@ int startMultiplier;
     menu.position = CGPointZero;
     
     [self addChild:menu z:5];
-
+    
     
     background.rotation = 90;
     // place background in the center of the screen
@@ -917,7 +929,7 @@ int startMultiplier;
                 CCParticleSystem *emitter;
                 
                 emitter = [[CCParticleExplosion alloc] initWithTotalParticles:30];
-
+                
                 emitter.tangentialAccel = 30;
                 
                 ccColor4F startColor = ccc4FFromccc3B(ccYELLOW);
@@ -925,7 +937,7 @@ int startMultiplier;
                 
                 ccColor4F endColor = {255, 255, 255, 0};
                 emitter.endColor = endColor;
-
+                
                 emitter.speed = 0.3;
                 
                 emitter.position = enemy.position;
@@ -941,7 +953,7 @@ int startMultiplier;
                 [self addChild:emitter];
                 
                 emitter.autoRemoveOnFinish = YES;
-
+                
                 
             }
         }
@@ -949,6 +961,8 @@ int startMultiplier;
         enemy_Score *= circlesDrawn;
         
         enemy_Score *= (((wave - 1)/10.00) + 1);
+        
+        enemy_Score *=  multiplier;
         
         
         if (circlesDrawn > 0) {
@@ -969,7 +983,7 @@ int startMultiplier;
             [pointsLabel runAction:[CCSequence actions:[CCFadeOut actionWithDuration:0.7] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
                 
                 [self removeChild:pointsLabel],
-                score += (enemy_Score * multiplier);
+                score += enemy_Score;
                 
             }], nil]];
             
@@ -977,7 +991,7 @@ int startMultiplier;
             
             
         } else {
-            score += (enemy_Score * multiplier);
+            score += enemy_Score;
         }
         
         
@@ -1051,7 +1065,7 @@ int startMultiplier;
                 [sound play];
                 
             }
-
+            
             [[CCDirector sharedDirector] resume];
             [[CCDirector sharedDirector] startAnimation];
             
@@ -1158,19 +1172,19 @@ int startMultiplier;
         [[SimpleAudioEngine sharedEngine] stopEffect:superSound];
         
         paused = true;
-    
+        
         CGSize winSize = [[CCDirector sharedDirector] winSize];
-    
+        
         if((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ([[UIScreen mainScreen] bounds].size.height == 568)) {
-        
+            
             pauseBackground = [CCSprite spriteWithFile:@"pause-568h.png"];
-        
+            
         } else {
-        
+            
             pauseBackground = [CCSprite spriteWithFile:@"pause.png"];
-        
+            
         }
-    
+        
         pauseBackground.position = ccp(winSize.width/2, winSize.height/2);
         [self addChild:pauseBackground z:5];
         
@@ -1265,7 +1279,7 @@ int startMultiplier;
                     playPoints = [prefs integerForKey:@"playPoints"];
                     [prefs setInteger:(playPoints+1) forKey:@"playPoints"];
                     break;
-
+                    
                 default:
                     break;
             }
@@ -1273,7 +1287,7 @@ int startMultiplier;
             card.position = box.position;
             
             [self addChild:card z:3];
-            [gameObjects addObject:card];            
+            [gameObjects addObject:card];
             break;
         }
     }
@@ -1355,7 +1369,7 @@ int startMultiplier;
             score += (enemyScore * multiplier);
             
         } else if (sprite.tag == PE_tag) {
-         
+            
             score += (PE_Score * multiplier);
         }
         
@@ -1542,7 +1556,7 @@ int startMultiplier;
 - (void) createBouncers:(ccTime)dt {
     
     if (enemies.count < levelEnemyCount) {
-
+        
         
         CGSize winSize = [CCDirector sharedDirector].winSize;
         
@@ -1598,7 +1612,19 @@ int startMultiplier;
     
     
     for (CCSprite *power in powerups) {
+        
         [self addToDeletionPile:power];
+        
+    }
+    
+    for (Enemy *helper in gameObjects) {
+        
+        if (helper.tag == helperNumber) {
+            
+            [self addToDeletionPile:helper];
+            
+        }
+        
     }
     
     if (wave < 10) {
@@ -1769,54 +1795,56 @@ int startMultiplier;
         CCSprite * powerup = nil;
         
         switch(arc4random() % 100) {
-            /*case 0 ... 29:
-                powerup = [CCSprite spriteWithFile:@"time.png"];
-                powerup.tag = timeNumber;
-                break;
-            case 30 ... 49:
-                powerup = [CCSprite spriteWithFile:@"star.png"];
-                powerup.tag = starNumber;
-                break;
-            case 50 ... 59:
-                powerup = [CCSprite spriteWithFile:@"heart.png"];
-                powerup.tag = heartNumber;
-                break;
-            case 60 ... 69:
-                powerup = [CCSprite spriteWithFile:@"coin.png"];
-                powerup.tag = coinNumber;
-                break;
-            case 70 ... 84:
+                /*case 0 ... 29:
+                 powerup = [CCSprite spriteWithFile:@"time.png"];
+                 powerup.tag = timeNumber;
+                 break;
+                 case 30 ... 49:
+                 powerup = [CCSprite spriteWithFile:@"star.png"];
+                 powerup.tag = starNumber;
+                 break;
+                 case 50 ... 59:
+                 powerup = [CCSprite spriteWithFile:@"heart.png"];
+                 powerup.tag = heartNumber;
+                 break;
+                 case 60 ... 69:
+                 powerup = [CCSprite spriteWithFile:@"coin.png"];
+                 powerup.tag = coinNumber;
+                 break;
+                 case 70 ... 84:
+                 powerup = [CCSprite spriteWithFile:@"helper.png"];
+                 powerup.tag = helperNumber;
+                 break;
+                 case 85 ... 99:*/
+            case 0 ... 99:
                 powerup = [CCSprite spriteWithFile:@"helper.png"];
                 powerup.tag = helperNumber;
-                break;
-            case 85 ... 99:*/
-            case 0 ... 99:
-                powerup = [CCSprite spriteWithFile:@"nuke.png"];
-                powerup.tag = nukeNumber;
-                break;
+                /* powerup = [CCSprite spriteWithFile:@"nuke.png"];
+                 powerup.tag = nukeNumber;
+                 break;*/
             default:
                 break;
         }
         
         if (powerup != nil) {
-        
+            
             // RANDOM SPAWNING
             int maxXpos = (winSize.width - (powerup.contentSize.width / 2)) + 1;
             int maxYpos = (winSize.height - (powerup.contentSize.height / 2)) - 25;
-        
+            
             int xpos = arc4random() % maxXpos;
             int ypos = arc4random() % maxYpos;
-        
+            
             if (xpos < (powerup.contentSize.width/2)){
                 xpos += powerup.contentSize.width/2;
             }
-        
+            
             if (ypos < (powerup.contentSize.height/2)){
                 ypos += powerup.contentSize.height/2;
             }
-        
+            
             powerup.position = ccp(xpos,ypos);
-        
+            
             [self addChild:powerup];
             [powerups addObject:powerup];
             [powerup runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:3.0 angle:180]]];
@@ -1882,7 +1910,7 @@ int startMultiplier;
             
         } else {
             
-            score += 100;
+            score += 500;
             
         }
         
@@ -1892,10 +1920,18 @@ int startMultiplier;
         
     } else if (powerup.tag == helperNumber) {
         
+        Enemy *helper;
+        
+        helper = [Enemy spriteWithFile:@"helperGuy.png"];
+        helper.tag = helperNumber;
+        helper.time = setTime;
+        helper.position = powerup.position;
+        [gameObjects addObject:helper];
+        [self addChild:helper z:4];
         
         
     } else if (powerup.tag == nukeNumber) {
-
+        
         lifeLost = true;
         
         CCShaky3D *shake = [CCShaky3D actionWithDuration:3.0 size:CGSizeMake(2, 2) range:5 shakeZ:NO];
@@ -1961,7 +1997,7 @@ int startMultiplier;
     superHeroStartTime = time;
     superHeroActive = true;
     
-   [self createSuperEffect];
+    [self createSuperEffect];
     
 }
 
@@ -1976,7 +2012,7 @@ int startMultiplier;
             ring.position = hero.position;
             
             ring.tag = ringEffect;
-
+            
             [gameObjects addObject:ring];
             [self addChild:ring z:2];
             
@@ -2221,7 +2257,7 @@ int startMultiplier;
             break;
     }
     
-        tintLevel ++;
+    tintLevel ++;
     
 }
 
@@ -2263,7 +2299,6 @@ int startMultiplier;
                         touchMoved = NO;
                         
                         circlesDrawn = 0;
-                        //[background runAction:[CCTintTo actionWithDuration:1.0 red:oldColor.r green:oldColor.g blue:oldColor.b]];
                         break;
                     }
                 }
@@ -2424,7 +2459,87 @@ int startMultiplier;
     
 }
 
+- (void) updateHelpers {
+    
+    if (gameObjects.count != 0) {
+        
+        int chaseNumber = 0;
+        
+        for (Enemy *helper in gameObjects) {
+            
+            if (helper.tag == helperNumber) {
+                
+                if (enemies.count > 0 && chaseNumber < enemies.count) {
+                    
+                    Enemy *enemy;
+                    
+                    enemy = [enemies objectAtIndex:chaseNumber++];
+                    
+                    
+                    [self movePos:enemy.position.x yVal:enemy.position.y chase:helper speed:helperSpeed];
+                    
+                    for (Enemy *enemy in enemies) {
+                        
+                        if (CGRectIntersectsRect(enemy.boundingBox, helper.boundingBox)) {
+                            
+                            score += enemyScore;
+                            
+                            [enemy runAction:[CCSequence actions:[CCScaleTo actionWithDuration:0.01 scale:0.1] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
+                                
+                                [self addToDeletionPile:enemy];
+                                
+                            }], nil]];
+                            
+                            CCParticleSystem *emitter;
+                            
+                            emitter = [[CCParticleExplosion alloc] initWithTotalParticles:30];
+                            
+                            emitter.tangentialAccel = 30;
+                            
+                            ccColor4F startColor = ccc4FFromccc3B(ccc3(80,184,244));
+                            emitter.startColor = startColor;
+                            
+                            ccColor4F endColor = {0, 0, 0, 0};
+                            emitter.endColor = endColor;
+                            
+                            emitter.speed = 0.3;
+                            
+                            emitter.position = enemy.position;
+                            
+                            emitter.scale = 0.6;
+                            
+                            emitter.texture = [[CCTextureCache sharedTextureCache] addImage:@"particleCircle.png"];
+                            
+                            emitter.life = 0.8f;
+                            
+                            emitter.lifeVar = 0;
+                            
+                            [self addChild:emitter];
+                            
+                            emitter.autoRemoveOnFinish = YES;
+                            
+                        }
+                    }
+                }
+                
+                if (helper.time > helperTime) {
+                    
+                    CCScaleTo *scale = [CCScaleTo actionWithDuration:0.7 scale:0.1];
+                    [helper runAction:[CCSequence actions: scale, [CCCallBlockN actionWithBlock:^(CCNode *node) {
+                        
+                        [self addToDeletionPile:helper];
+                        
+                    }], nil]];
+                    
+                }
+            }
+        }
+    }
+}
+
 - (void) update:(ccTime)dt {
+    
+    [self updateHelpers];
     
     if (superHeroActive == false) {
         
@@ -2457,7 +2572,6 @@ int startMultiplier;
             doublePointsActive = false;
             superActive = false;
             multiplier = startMultiplier;
-            //superHeroStartTime = time;
             
         }
         
