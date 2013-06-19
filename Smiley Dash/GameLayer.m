@@ -43,6 +43,8 @@ CCSprite *pauseBackground;
 /// consider removing aswell as method
 CCSprite *ring;
 
+// add highscore to gameover
+
 int spawn;
 
 int tintLevel;
@@ -945,7 +947,9 @@ int startMultiplier;
         }
         
         enemy_Score *= circlesDrawn;
-        enemy_Score *= ((wave/10) + 1);
+        
+        enemy_Score *= (((wave - 1)/10.00) + 1);
+        
         
         if (circlesDrawn > 0) {
             
@@ -1195,6 +1199,8 @@ int startMultiplier;
 
 - (void) placeCard {
     
+    NSInteger playPoints;
+    
     for (CCSprite *box in gameObjects) {
         
         CCSprite * card = nil;
@@ -1242,13 +1248,24 @@ int startMultiplier;
                     
                     
                     break;
-                case 80 ... 99:
+                case 80 ... 86:
+                    
                     card = [CCSprite spriteWithFile:@"playCard.png"];
                     card.tag = playCard;
                     
-                    NSInteger playPoints = [prefs integerForKey:@"playPoints"];
+                    playPoints = [prefs integerForKey:@"playPoints"];
                     [prefs setInteger:(playPoints+3) forKey:@"playPoints"];
                     break;
+                    
+                case 87 ... 99:
+                    
+                    card = [CCSprite spriteWithFile:@"playPoint.png"];
+                    card.tag = playCard;
+                    
+                    playPoints = [prefs integerForKey:@"playPoints"];
+                    [prefs setInteger:(playPoints+1) forKey:@"playPoints"];
+                    break;
+
                 default:
                     break;
             }
@@ -1334,7 +1351,12 @@ int startMultiplier;
     for (CCSprite *sprite in spriteToDelete) {
         
         if (sprite.tag == scoreEnemy) {
+            
             score += (enemyScore * multiplier);
+            
+        } else if (sprite.tag == PE_tag) {
+         
+            score += (PE_Score * multiplier);
         }
         
         [enemies removeObject:sprite];
@@ -1574,6 +1596,7 @@ int startMultiplier;
 
 - (void) redLevelCreate {
     
+    
     for (CCSprite *power in powerups) {
         [self addToDeletionPile:power];
     }
@@ -1746,46 +1769,58 @@ int startMultiplier;
         CCSprite * powerup = nil;
         
         switch(arc4random() % 100) {
-            case 0 ... 29:
+            /*case 0 ... 29:
                 powerup = [CCSprite spriteWithFile:@"time.png"];
                 powerup.tag = timeNumber;
                 break;
-            case 30 ... 59:
+            case 30 ... 49:
                 powerup = [CCSprite spriteWithFile:@"star.png"];
                 powerup.tag = starNumber;
                 break;
-            case 60 ... 79:
+            case 50 ... 59:
                 powerup = [CCSprite spriteWithFile:@"heart.png"];
                 powerup.tag = heartNumber;
                 break;
-            case 80 ... 99:
+            case 60 ... 69:
                 powerup = [CCSprite spriteWithFile:@"coin.png"];
                 powerup.tag = coinNumber;
+                break;
+            case 70 ... 84:
+                powerup = [CCSprite spriteWithFile:@"helper.png"];
+                powerup.tag = helperNumber;
+                break;
+            case 85 ... 99:*/
+            case 0 ... 99:
+                powerup = [CCSprite spriteWithFile:@"nuke.png"];
+                powerup.tag = nukeNumber;
                 break;
             default:
                 break;
         }
         
-        // RANDOM SPAWNING
-        int maxXpos = (winSize.width - (powerup.contentSize.width / 2)) + 1;
-        int maxYpos = (winSize.height - (powerup.contentSize.height / 2)) - 25;
+        if (powerup != nil) {
         
-        int xpos = arc4random() % maxXpos;
-        int ypos = arc4random() % maxYpos;
+            // RANDOM SPAWNING
+            int maxXpos = (winSize.width - (powerup.contentSize.width / 2)) + 1;
+            int maxYpos = (winSize.height - (powerup.contentSize.height / 2)) - 25;
         
-        if (xpos < (powerup.contentSize.width/2)){
-            xpos += powerup.contentSize.width/2;
+            int xpos = arc4random() % maxXpos;
+            int ypos = arc4random() % maxYpos;
+        
+            if (xpos < (powerup.contentSize.width/2)){
+                xpos += powerup.contentSize.width/2;
+            }
+        
+            if (ypos < (powerup.contentSize.height/2)){
+                ypos += powerup.contentSize.height/2;
+            }
+        
+            powerup.position = ccp(xpos,ypos);
+        
+            [self addChild:powerup];
+            [powerups addObject:powerup];
+            [powerup runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:3.0 angle:180]]];
         }
-        
-        if (ypos < (powerup.contentSize.height/2)){
-            ypos += powerup.contentSize.height/2;
-        }
-        
-        powerup.position = ccp(xpos,ypos);
-        
-        [self addChild:powerup];
-        [powerups addObject:powerup];
-        [powerup runAction:[CCRepeatForever actionWithAction:[CCRotateBy actionWithDuration:3.0 angle:180]]];
     }
     
 }
@@ -1854,6 +1889,46 @@ int startMultiplier;
     } else if (powerup.tag == coinNumber) {
         
         score += (coinScore * multiplier);
+        
+    } else if (powerup.tag == helperNumber) {
+        
+        
+        
+    } else if (powerup.tag == nukeNumber) {
+
+        lifeLost = true;
+        
+        CCShaky3D *shake = [CCShaky3D actionWithDuration:3.0 size:CGSizeMake(2, 2) range:5 shakeZ:NO];
+        [self runAction:[CCSequence actions:shake, [CCStopGrid action],[CCCallBlockN actionWithBlock:^(CCNode *node) {
+            lifeLost = false;
+        }], nil]];
+        
+        CCSprite * select;
+        
+        select = [CCSprite spriteWithFile:@"nukeEffect.png"];
+        select.opacity = 0;
+        
+        CCScaleTo *scale = [CCScaleTo actionWithDuration: 0.7 scaleX:100 scaleY:100];
+        CCFadeOut *fade = [CCFadeOut actionWithDuration:10.0];
+        [select runAction:[CCSequence actions:[CCCallBlockN actionWithBlock:^(CCNode *node) {select.opacity = 255;
+        }], scale, fade, [CCCallBlockN actionWithBlock:^(CCNode *node) {
+            
+            [self addToDeletionPile:select];
+            
+        }], nil]];
+        
+        select.position = powerup.position;
+        select.tag = nukeEffect;
+        
+        [gameObjects addObject:select];
+        [self addChild:select z:7];
+        
+        for (CCSprite *enemy in enemies) {
+            
+            score += (enemyScore * multiplier);
+            [self addToDeletionPile:enemy];
+            
+        }
         
     }
     
@@ -2217,8 +2292,6 @@ int startMultiplier;
                     [self addToDeletionPile:enemy];
                     
                 }], nil]];
-
-                score += (enemyScore * multiplier);
                 
             }
             

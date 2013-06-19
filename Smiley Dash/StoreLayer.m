@@ -79,7 +79,14 @@ NSMutableArray * array;
         
         NSInteger highScore = [prefs doubleForKey:@"totalScore"];
         
-        scoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%i", highScore] fontName:@"Larabiefont" fontSize:23];
+        NSNumberFormatter *formatter = [NSNumberFormatter new];
+        [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+        
+        NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:highScore]];
+        
+        [formatter release];
+        
+        scoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@", formatted] fontName:@"Larabiefont" fontSize:23];
         [scoreLabel setAnchorPoint:ccp(0, 0)];
         scoreLabel.position = ccp(size.width/2 - 30, size.height - 32);
         scoreLabel.color = ccYELLOW;

@@ -13,6 +13,7 @@
 #import "StoreLayer.h"
 #import "SimpleAudioEngine.h"
 #import "AboutLayer.h"
+#import "GuideLayer.h"
 
 
 @implementation MenuLayer
@@ -63,8 +64,6 @@
             backgroundString = @"hero.png";
             [prefs setObject:backgroundString forKey:@"smiley"];
             
-            [prefs setInteger:250000000 forKey:@"totalScore"];
-            
             [prefs setInteger:1 forKey:@"firstRun"];
             
         }
@@ -93,8 +92,15 @@
         [self addChild:scoreImage z:4];
         
         NSInteger highScore = [prefs doubleForKey:@"highScore"];
+        
+        NSNumberFormatter *formatter = [NSNumberFormatter new];
+        [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+        
+        NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:highScore]];
+        
+        [formatter release];
 
-        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%i", highScore] fontName:@"Larabiefont" fontSize:17];
+        label = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%@", formatted] fontName:@"Larabiefont" fontSize:17];
         [label setAnchorPoint:ccp(0, 0)];
         label.position = ccp(size.width/15 + 5, size.height - 30);
         label.color = ccc3(132, 15, 5);
@@ -119,11 +125,7 @@
         
         [self addChild:menu];
         
-        if (![[SimpleAudioEngine sharedEngine] isBackgroundMusicPlaying]) {
-        
-            [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"mainMenu.mp3"];
-            
-        }
+        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"mainMenu.mp3"];
         
 	}
     
@@ -147,7 +149,7 @@
 }
 
 - (void) guideTapped:(id)sender {
-    printf("yet to be done!");
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[GuideLayer scene]]];
 }
 
 - (void) storeTapped:(id)sender {

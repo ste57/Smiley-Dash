@@ -26,23 +26,23 @@
 
 #define startEnemies 10
 #define enemyAddition 5
-#define enemyScore 1000
+#define enemyScore 500//1000
 #define accelerateEnemyInterval 1.0
 
 #define enemy_speed 0.1
-#define enemy_maxSpeed 1.0
+#define enemy_maxSpeed 1.5
 
 #define enemy_slow 0.03
 
 #define enemy_killTime 60
 
 #define enemy_acceleration 0.2
-#define enemy_spawnTime 0.75
+#define enemy_spawnTime 0.50
 
 // POWER EATERS
 
-#define PE_speed 0.5
-#define PE_tag 2
+#define PE_Score 1000
+#define PE_speed 1.2
 
 // SUPER ZOMBIE
 
@@ -66,15 +66,15 @@
 #define redLevelChange 4
 #define redLevelStartMin 3
 #define redLevelScore 5000
-#define redLevelTime 30.0
+#define redLevelTime 20.0
 
 #define level1bouncers 7
-#define level2bouncers 10
-#define level3bouncers 15
+#define level2bouncers 13
+#define level3bouncers 20
 
 #define redLevel1Speed 1
 #define redLevel2Speed 2
-#define redLevel3Speed 2
+#define redLevel3Speed 3
 
 #define bouncerSpeedRange 3
 #define bouncerInterval 0.2
@@ -116,7 +116,11 @@
 #define coinNumber 22
 #define heroTag 23
 #define superHeroTag 24
-#define bouncer_tag 21
+#define bouncer_tag 25
+#define PE_tag 26
+#define nukeNumber 27
+#define helperNumber 28
+#define nukeEffect 29
 
 // POWERUPS
 
