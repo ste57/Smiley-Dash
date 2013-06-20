@@ -40,8 +40,8 @@
 
 #define enemy_killTime 60
 
-#define enemy_acceleration 0.2
-#define enemy_spawnTime 0.6
+#define enemy_acceleration 0.1
+#define enemy_spawnTime 0.7//0.6
 
 // POWER EATERS
 

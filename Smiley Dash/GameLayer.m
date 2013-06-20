@@ -16,6 +16,7 @@
 
 ALuint timerSound;
 ALuint superSound;
+ALuint redSound;
 
 NSMutableArray * enemies;
 NSMutableArray * powerups;
@@ -1208,7 +1209,7 @@ int startMultiplier;
         
         stopButton = [CCSprite spriteWithFile:@"stopOff.png"];
         stopButton.scale = 0.5;
-        stopButton.position = ccp(winSize.width/15, winSize.height/15);
+        stopButton.position = ccp(winSize.width/15, winSize.height/11);
         [self addChild:stopButton z:6];
         
         
@@ -1505,12 +1506,16 @@ int startMultiplier;
                     
                     // DEATH!!
                     
+                    [[SimpleAudioEngine sharedEngine] stopEffect:redSound];
+                    
                     redLevelActive = false;
                     levelEnemyCount = 0;
                     
                     [self unschedule:@selector(updateBouncers:)];
                     [self unschedule:@selector(createBouncers:)];
                     [self unScheduleMethods];
+                    
+                    [prefs setInteger:score forKey:@"tempScore"];
                     
                     NSInteger highScore = [prefs doubleForKey:@"highScore"];
                     NSInteger totalScore = [prefs doubleForKey:@"totalScore"];
@@ -1631,6 +1636,9 @@ int startMultiplier;
 
 - (void) redLevelCreate {
     
+    [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
+    
+    superSound = [[SimpleAudioEngine sharedEngine] playEffect:@"redLevel.mp3"];
     
     for (CCSprite *power in powerups) {
         
@@ -1672,6 +1680,8 @@ int startMultiplier;
 }
 
 - (void) stopRedLevel:(ccTime)dt {
+    
+    [[SimpleAudioEngine sharedEngine] resumeBackgroundMusic];
     
     [self unschedule:@selector(createBouncers:)];
     [self unschedule:@selector(updateBouncers:)];
@@ -1945,7 +1955,32 @@ int startMultiplier;
         
     } else if (powerup.tag == coinNumber) {
         
-        score += (coinScore * multiplier);
+        int coinLabelScore;
+        
+        coinLabelScore = (coinScore * multiplier);
+        
+        CCLabelTTF *pointsLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"%d", coinLabelScore] fontName:@"Baccarat" fontSize:18];
+        
+        pointsLabel.position = ccp(scoreLabel.position.x + 10, scoreLabel.position.y - 30);
+        
+        [pointsLabel setAnchorPoint:ccp(0, 0)];
+        
+        // change the colour to yelllow
+        pointsLabel.color = ccWHITE;
+        
+        [pointsLabel runAction:[CCScaleTo actionWithDuration:1.0 scale:2.0]];
+        
+        [pointsLabel runAction:[CCMoveTo actionWithDuration:0.5 position:scoreLabel.position]];
+        
+        [pointsLabel runAction:[CCSequence actions:[CCFadeOut actionWithDuration:0.7] ,[CCCallBlockN actionWithBlock:^(CCNode *node) {
+            
+            [self removeChild:pointsLabel],
+            score += coinLabelScore;
+            
+        }], nil]];
+        
+        [self addChild:pointsLabel z:5];
+
         
     } else if (powerup.tag == helperNumber) {
         
@@ -2462,6 +2497,8 @@ int startMultiplier;
                     currentEnemyCount -= enemies.count;
                     
                     [enemy runAction:[CCMoveTo actionWithDuration:1.0 position:hero.position]];
+                    
+                    [prefs setInteger:score forKey:@"tempScore"];
                     
                     NSInteger highScore = [prefs doubleForKey:@"highScore"];
                     NSInteger totalScore = [prefs doubleForKey:@"totalScore"];

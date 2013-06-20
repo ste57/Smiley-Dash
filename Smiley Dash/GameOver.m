@@ -93,6 +93,24 @@ CCLabelTTF *pointsLabel;
         
         [self addChild:restart];
         
+        CCLabelTTF *scoreLabel;
+        
+        NSInteger highScore = [prefs doubleForKey:@"tempScore"];
+        
+        NSNumberFormatter *formatter = [NSNumberFormatter new];
+        [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+        
+        NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:highScore]];
+        
+        [formatter release];
+        
+        scoreLabel = [CCLabelTTF labelWithString:[NSString stringWithFormat:@"Score : %@", formatted] fontName:@"Larabiefont" fontSize:15];
+        
+        scoreLabel.position = ccp(size.width/2, size.height/10);
+        scoreLabel.color = ccGRAY;
+        [self addChild:scoreLabel z:4];
+
+        
         
 	}
 

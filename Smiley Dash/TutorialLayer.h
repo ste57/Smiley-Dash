@@ -11,6 +11,9 @@
 
 @interface TutorialLayer : CCLayer {
     
+    CGPoint touchLocation;
+    CCSprite * background;
+    
 }
 
 +(CCScene *) scene;
